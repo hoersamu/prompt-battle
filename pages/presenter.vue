@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { PresenterState } from "../config/presenter";
 
+const route = useRoute();
+
+const room = route.query.room?.toString() ?? '';
+
+if (!room) {
+  console.log('no room', room)
+  await navigateTo('/');
+}
+
 const { players } = usePresenterView('2');
 </script>
 

@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { PresenterState, getPresenterStateText } from "@/config/presenter";
+import {
+  PresenterState,
+  getPresenterLayout,
+  getPresenterLayoutText,
+} from "@/config/presenter";
 
 const { name, points, state } = defineProps<{
   name: string;
@@ -8,11 +12,11 @@ const { name, points, state } = defineProps<{
   state: PresenterState;
 }>();
 
-let dataStateName = getPresenterStateText(state);
+let dataLayoutName = getPresenterLayoutText(getPresenterLayout(state));
 </script>
 
 <template>
-  <div class="presenter-user-window__wrapper" :data-state="dataStateName">
+  <div class="presenter-user-window__wrapper" :data-layout="dataLayoutName">
     <p class="presenter-user-window__name">
       {{ name }}
     </p>
@@ -28,6 +32,12 @@ let dataStateName = getPresenterStateText(state);
     >
       {{ text }}
       <span class="presenter-user-window__caret">_</span>
+    </p>
+    <p
+      v-if="state === PresenterState.ImageSelection"
+      class="presenter-user-window__img-gallery"
+    >
+      <PresenterImageGallery />
     </p>
   </div>
 </template>
@@ -46,7 +56,7 @@ let dataStateName = getPresenterStateText(state);
   width: 50%;
   min-height: 50%;
 }
-.presenter-user-window__wrapper[data-state="typing"] {
+.presenter-user-window__wrapper[data-layout="large-content"] {
   grid-template-rows: min-content 1fr;
 }
 
@@ -58,7 +68,7 @@ let dataStateName = getPresenterStateText(state);
   border-bottom: 2px solid;
 }
 
-.presenter-user-window__wrapper[data-state="waiting"]
+.presenter-user-window__wrapper[data-state="normal"]
   .presenter-user-window__name {
   font-size: 4rem;
 }

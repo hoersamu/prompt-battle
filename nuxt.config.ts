@@ -4,9 +4,22 @@ export default defineNuxtConfig({
   vite: {
     vue: {
       script: {
-        propsDestructure: true,
+         propsDestructure: true
+      }
+    }
+  },
+  routeRules: {
+    '/play': { ssr: false }
+  },
+  typescript: {
+    tsConfig: {
+      compilerOptions: {
+        paths: {
+          '@': [ '.' ],
+          '@/*': [ './*' ],
+        },
       },
     },
   },
   css: ["@/styles/global.css"],
-});
+})

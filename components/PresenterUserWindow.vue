@@ -4,11 +4,10 @@ import {
   getPresenterLayout,
   getPresenterLayoutText,
 } from "@/config/presenter";
+import type { Player } from '@/types';
 
-const { name, points, state } = defineProps<{
-  name: string;
-  points?: number;
-  text?: string;
+const { player, state } = defineProps<{
+  player: Player;
   state: PresenterState;
 }>();
 
@@ -18,19 +17,19 @@ let dataLayoutName = getPresenterLayoutText(getPresenterLayout(state));
 <template>
   <div class="presenter-user-window__wrapper" :data-layout="dataLayoutName">
     <p class="presenter-user-window__name">
-      {{ name }}
+      {{ player.name }}
     </p>
-    <p
+    <!-- <p
       v-if="state === PresenterState.Waiting && points"
       class="presenter-user-window__subheading"
     >
       {{ points }}
-    </p>
+    </p> -->
     <p
       v-if="state === PresenterState.Typing"
       class="presenter-user-window__text"
     >
-      {{ text }}
+      {{ player.prompt }}
       <span class="presenter-user-window__caret">_</span>
     </p>
     <p

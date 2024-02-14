@@ -1,17 +1,7 @@
 <script setup lang="ts">
-import { createClient } from "@supabase/supabase-js";
 import { PresenterState } from "../config/presenter";
-const supabase = createClient(
-  "https://qvmyzaxnpycusghepyyz.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2bXl6YXhucHljdXNnaGVweXl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDc5MzAxNDksImV4cCI6MjAyMzUwNjE0OX0.a1h9aPPhZcoflKeT9ZS0iKHyCLav4VnrQadmDRyRLHg"
-);
 
-const players: { name: string; points?: number }[] = [
-  { name: "Thomas", points: 2 },
-  { name: "Samuel", points: 10 },
-  { name: "Markus" },
-  // { name: "Markus", points: 3 },
-];
+const { players } = usePresenterView('2');
 </script>
 
 <template>
@@ -19,10 +9,8 @@ const players: { name: string; points?: number }[] = [
     <PresenterUserWindow
       v-for="(player, index) in players"
       :key="`player-${index}`"
-      :name="player.name"
-      :points="player.points"
-      :text="'Rebum commodo erat eu iriure at tempor commodo dolores at nulla sed elitr dolor. Illum sit exerci sanctus lorem invidunt aliquyam delenit eirmod lorem volutpat qui. Dolores sed dolores qui nonumy volutpat voluptua. Nibh esse tempor dolor. Invidunt et magna lorem consetetur et kasd dolores ex eirmod consequat amet consectetuer ut et. Nonummy quis vero invidunt.'"
-      :state="PresenterState.ImageSelection"
+      :player="player"
+      :state="PresenterState.Typing"
     />
   </div>
 </template>

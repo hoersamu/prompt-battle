@@ -20,8 +20,9 @@ const players: { name: string; points?: number }[] = [
       v-for="(player, index) in players"
       :key="`player-${index}`"
       :name="player.name"
-      :state="PresenterState.Waiting"
       :points="player.points"
+      :text="'Rebum commodo erat eu iriure at tempor commodo dolores at nulla sed elitr dolor. Illum sit exerci sanctus lorem invidunt aliquyam delenit eirmod lorem volutpat qui. Dolores sed dolores qui nonumy volutpat voluptua. Nibh esse tempor dolor. Invidunt et magna lorem consetetur et kasd dolores ex eirmod consequat amet consectetuer ut et. Nonummy quis vero invidunt.'"
+      :state="PresenterState.Typing"
     />
   </div>
 </template>

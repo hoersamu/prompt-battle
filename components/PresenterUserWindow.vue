@@ -54,6 +54,8 @@ let dataStateName = getPresenterStateText(state);
   font-size: 2rem;
   font-weight: bold;
   margin: 0;
+  padding: 0 1rem;
+  border-bottom: 2px solid;
 }
 
 .presenter-user-window__wrapper[data-state="waiting"]
@@ -67,8 +69,12 @@ let dataStateName = getPresenterStateText(state);
 }
 
 .presenter-user-window__text {
-  margin: 1.5rem;
   height: 1fr;
+  width: 100%;
+  margin: 1.5rem;
+  text-align: center;
+  overflow: hidden;
+  overflow-wrap: break-word;
 }
 
 @keyframes blinking {

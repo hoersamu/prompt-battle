@@ -4,8 +4,9 @@ export default defineNuxtConfig({
   vite: {
     vue: {
       script: {
-         propsDestructure: true
-      }
-    }
-  }
-})
+        propsDestructure: true,
+      },
+    },
+  },
+  css: ["@/styles/global.css"],
+});

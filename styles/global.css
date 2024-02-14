@@ -1,0 +1,24 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --color-bg-pastell-1: hsl(205, 33%, 71%);
+  --color-bg-pastell-2: hsl(49, 100%, 92%);
+  --color-bg-pastell-3: hsl(44, 81%, 64%);
+  --color-bg-pastell-4: hsl(76, 35%, 64%);
+}
+
+html {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+}
+
+#__nuxt {
+  height: 100%;
+}

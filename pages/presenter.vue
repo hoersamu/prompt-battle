@@ -10,7 +10,7 @@ if (!room) {
   await navigateTo('/');
 }
 
-const { players } = usePresenterView('2');
+const { players } = usePresenterView(room);
 </script>
 
 <template>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { PLAYER_STATES } from '@/config/players';
+import { useStorage } from '@vueuse/core';
 
 const route = useRoute();
 
 const room = route.query.room?.toString() ?? '';
 
-const name = ref('');
+const name = useStorage(room, '');
 const prompt = ref('');
 
 const { joinRoom, state, timeLeft, timeLimit, images, selectImage } = usePlayerView(prompt);
@@ -19,6 +20,12 @@ const showPlayerGameScreen = computed(() => [
   PLAYER_STATES.PLAYING,
   PLAYER_STATES.WAITING
 ].includes(state.value));
+
+onBeforeMount(() => {
+  if (name.value) {
+    join();
+  }
+});
 
 definePageMeta({
   middleware: ['check-room'],

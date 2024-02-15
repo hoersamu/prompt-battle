@@ -5,12 +5,11 @@ const route = useRoute();
 
 const room = route.query.room?.toString() ?? '';
 
-if (!room) {
-  console.log('no room', room)
-  await navigateTo('/');
-}
-
 const { players } = usePresenterView(room);
+
+definePageMeta({
+  middleware: ['check-room'],
+});
 </script>
 
 <template>

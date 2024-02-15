@@ -12,6 +12,8 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.39.6",
     "nuxt": "^3.10.2",
+    "openai": "^4.28.0",
+    "sass": "^1.70.0",
     "typescript": "^5.3.3",
     "uuid": "^9.0.1",
     "vue": "^3.4.19",

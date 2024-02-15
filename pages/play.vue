@@ -1,45 +1,42 @@
 <script setup lang="ts">
-import { Events } from '@/config';
-import { RealtimeChannel } from '@supabase/supabase-js'
+import { PLAYER_STATES } from '@/config/players';
 
 const route = useRoute();
 
-
 const room = route.query.room?.toString() ?? '';
-
-if (!room) {
-  console.log('no room', room)
-  await navigateTo('/');
-}
-
-const channel = ref<RealtimeChannel>();
 
 const name = ref('');
 const prompt = ref('');
-const { joinRoom } = usePlayerView(prompt);
 
-const join = () => {
-  joinRoom(room, name.value);
+const { joinRoom, state, timeLeft, timeLimit, images, selectImage } = usePlayerView(prompt);
+
+const join = async () => {
+  await joinRoom(room, name.value);
 }
 
-watch(prompt, (newVal) => {
-  if (newVal) {
-    channel.value?.send({
-      type: 'broadcast',
-      event: Events.PROMPT,
-      payload: {
-        name: name.value,
-        prompt: prompt.value,
-      },
-    });
-  }
+const showPlayerGameScreen = computed(() => [
+  PLAYER_STATES.READY,
+  PLAYER_STATES.PLAYING,
+  PLAYER_STATES.WAITING
+].includes(state.value));
+
+definePageMeta({
+  middleware: ['check-room'],
 });
 </script>
 
 <template>
-  <div>Name</div>
-  <input v-model="name" />
-  <button @click="join">Send</button>
-  <div>Text</div>
-  <textarea v-model="prompt" />
+  <div class="player-view">
+    <PlayerNameInput v-model="name" @submit.once="join" v-if="state === PLAYER_STATES.NAME_INPUT" />
+    <PlayerGameScreen v-if="showPlayerGameScreen" :state="state" v-model="prompt" :time="timeLeft"
+      :time-limit="timeLimit" />
+    <PlayerImageSelection v-if="state === PLAYER_STATES.IMAGE_SELECTION" :images="images" @select-image="selectImage" />
+  </div>
 </template>
+
+<style scoped lang="scss">
+.player-view {
+  height: 100%;
+  background-color: #575a5f;
+}
+</style>

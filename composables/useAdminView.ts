@@ -4,7 +4,7 @@ import { REALTIME_LISTEN_TYPES } from '@supabase/supabase-js';
 import { useOpenAIImages } from './useOpenAIImages';
 
 export const useAdminView = (roomId: string) => {
-  const { players, channel } = usePresenterView(roomId, () => {});
+  const { players, channel } = usePresenterView(roomId);
   const { generateImages } = useOpenAIImages();
   const time = ref(0);
   const timeLimit = ref(30);

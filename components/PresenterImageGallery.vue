@@ -1,29 +1,34 @@
 <script setup lang="ts">
-defineProps<{ images: string[]; index?: number }>();
+defineProps<{
+  images: string[];
+  index?: number;
+  interactive?: boolean;
+}>();
+
+defineEmits<{
+  selectImage: [number]
+}>();
 </script>
 
 <template>
-  <div
-    :class="[
-      'presenter-image-gallery__wrapper',
-      { 'presenter-image-gallery__wrapper--active': index !== undefined },
-    ]"
-  >
+  <div :class="[
+    'presenter-image-gallery__wrapper',
+    { 'presenter-image-gallery__wrapper--active': index !== undefined },
+    { 'presenter-image-gallery__wrapper--interactive': interactive },
+  ]">
     <template v-if="index !== undefined">
       <img class="presenter-image-gallery__image" :src="images[index]" />
     </template>
     <template v-else>
-      <img
-        v-for="img in images"
-        class="presenter-image-gallery__image"
-        :key="img"
-        :src="img"
-      />
+      <img v-for="(img, index) in images" :class="[
+        'presenter-image-gallery__image',
+        { 'presenter-image-gallery__image--interactive': interactive },
+      ]" :key="img" :src="img" @click="$emit('selectImage', index)" />
     </template>
   </div>
 </template>
 
-<style>
+<style lang="scss">
 .presenter-image-gallery__wrapper {
   max-height: 100%;
   max-width: 100%;
@@ -46,6 +51,7 @@ defineProps<{ images: string[]; index?: number }>();
 .presenter-image-gallery__image {
   height: 100%;
   width: 100%;
+  aspect-ratio: 1 / 1;
 
   object-fit: contain;
   padding: 0.5rem;
@@ -54,5 +60,13 @@ defineProps<{ images: string[]; index?: number }>();
   border: 3px solid #000;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
     rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+
+  &--interactive {
+    transition: all .2s ease-out;
+
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
 }
 </style>

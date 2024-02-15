@@ -5,4 +5,5 @@ export enum PLAYER_STATES {
   WAITING = 'waiting',
   IMAGE_SELECTION = 'image-selection',
   IMAGE_SELECTED = 'image-selected',
+  TOS_VIOLATION = 'tos-violation',
 }

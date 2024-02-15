@@ -1,6 +1,6 @@
 import { Events } from '@/config';
 import { PLAYER_STATES } from '@/config/players';
-import type { GameStartEvent, ImageSelectEvent, ImagesReadyEvent, PromptEvent } from '@/types';
+import type { GameStartEvent, ImageSelectEvent, ImagesReadyEvent, PromptEvent, ToSViolation } from '@/types';
 import { REALTIME_LISTEN_TYPES, REALTIME_SUBSCRIBE_STATES } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -36,11 +36,18 @@ export const usePlayerView = (prompt: Ref<string>) => {
     state.value = PLAYER_STATES.IMAGE_SELECTION;
   };
 
+  const onTosViolation = ({payload}: ToSViolation) => {
+    if(payload.playerId !== playerId) return;
+
+    state.value = PLAYER_STATES.TOS_VIOLATION;
+  };
+
   const joinRoom = async (roomId: string, name: string) => {
     joinChannel(roomId);
 
     channel.value?.on(REALTIME_LISTEN_TYPES.BROADCAST, { event: Events.START_ROUND }, onGameStart)
       .on(REALTIME_LISTEN_TYPES.BROADCAST, { event: Events.IMAGES_READY }, onImagesReady)
+      .on(REALTIME_LISTEN_TYPES.BROADCAST, { event: Events.TOS_VIOLATION }, onTosViolation)
       .subscribe(async (status) => {
         if (status !== REALTIME_SUBSCRIBE_STATES.SUBSCRIBED) {
           console.error('Failed to subscribe to presence channel. STATUS:', status)
@@ -66,7 +73,7 @@ export const usePlayerView = (prompt: Ref<string>) => {
     channel.value?.send({
       type: REALTIME_LISTEN_TYPES.BROADCAST,
       payload,
-      event: Events.PROMPT
+      event: Events.SELECT_IMAGE
     })
 
     state.value = PLAYER_STATES.IMAGE_SELECTED;

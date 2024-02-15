@@ -8,6 +8,7 @@ const room = route.query.room?.toString() ?? '';
 
 const name = useStorage(room, '');
 const prompt = ref('');
+const selectedImage = ref<number>();
 
 const { joinRoom, state, timeLeft, timeLimit, images, selectImage } = usePlayerView(prompt);
 
@@ -21,11 +22,21 @@ const showPlayerGameScreen = computed(() => [
   PLAYER_STATES.WAITING
 ].includes(state.value));
 
+const showImageSelection = computed(() => [
+  PLAYER_STATES.IMAGE_SELECTED,
+  PLAYER_STATES.IMAGE_SELECTION,
+].includes(state.value));
+
 onBeforeMount(() => {
   if (name.value) {
     join();
   }
 });
+
+const onImageSelected = (index: number) => {
+  selectedImage.value = index;
+  selectImage(index);
+};
 
 definePageMeta({
   middleware: ['check-room'],
@@ -37,7 +48,7 @@ definePageMeta({
     <PlayerNameInput v-model="name" @submit.once="join" v-if="state === PLAYER_STATES.NAME_INPUT" />
     <PlayerGameScreen v-if="showPlayerGameScreen" :state="state" v-model="prompt" :time="timeLeft"
       :time-limit="timeLimit" />
-    <PlayerImageSelection v-if="state === PLAYER_STATES.IMAGE_SELECTION" :images="images" @select-image="selectImage" />
+    <PresenterImageGallery v-if="showImageSelection" :images="images" @select-image="onImageSelected" interactive :index="selectedImage" />
   </div>
 </template>
 

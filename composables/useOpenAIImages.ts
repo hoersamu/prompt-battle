@@ -5,11 +5,11 @@ export const useOpenAIImages = () => {
     // const openai = new OpenAI({ apiKey: '', dangerouslyAllowBrowser: true });
 
     return [
-      'https://cataas.com/cat',
-      'https://cataas.com/cat',
-      'https://cataas.com/cat',
-      'https://cataas.com/cat',
-    ]
+      'https://placekitten.com/200/200',
+      'https://placekitten.com/201/201',
+      'https://placekitten.com/202/202',
+      'https://placekitten.com/203/203',
+    ];
 
     // Throws 400
     // {

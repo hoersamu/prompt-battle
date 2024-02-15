@@ -7,7 +7,7 @@ export const useAdminView = (roomId: string) => {
   const { players, channel } = usePresenterView(roomId);
   const { generateImages } = useOpenAIImages();
   const time = ref(0);
-  const timeLimit = ref(30);
+  const timeLimit = ref(1);
 
   let interval: NodeJS.Timeout;
 

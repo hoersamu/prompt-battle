@@ -3,7 +3,12 @@ import { PresenterState } from "../config/presenter";
 
 const route = useRoute();
 
-const room = route.query.room?.toString() ?? '';
+const room = route.query.room?.toString() ?? "";
+
+if (!room) {
+  console.log("no room", room);
+  await navigateTo("/");
+}
 
 const { players } = usePresenterView(room);
 
@@ -14,12 +19,25 @@ definePageMeta({
 
 <template>
   <div class="presenter__wrapper">
-    <PresenterUserWindow
-      v-for="(player, index) in players"
-      :key="`player-${index}`"
-      :player="player"
-      :state="PresenterState.Typing"
-    />
+    <div class="presenter__header">
+      <p>Round 1 - 00:50</p>
+      <!-- <p>"A little frog jumping into the pond"</p> -->
+    </div>
+    <div
+      :class="{
+        'presenter__wrapper-players': true,
+        'presenter__wrapper-players--duell': players.length <= 2,
+      }"
+    >
+      <PresenterUserWindow
+        v-for="(player, index) in players"
+        :key="`player-${index}`"
+        :player="player"
+        :player-count="players.length"
+        :card-id="index"
+        :state="PresenterState.ImageSelection"
+      />
+    </div>
   </div>
 </template>
 
@@ -28,16 +46,45 @@ html {
   overscroll-behavior: none;
 }
 body {
-  background: #000;
+  background: hsl(0, 0%, 98%);
 }
 </style>
 
 <style scoped>
 .presenter__wrapper {
   height: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-rows: min-content minmax(0, 1fr);
+}
+.presenter__header {
+  background: hsl(0, 0%, 20%);
+  color: white;
+  text-align: center;
+  font-size: 1.75rem;
+  padding: 0.75rem 0;
+
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+    rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  border-radius: 0 0 0.5rem 0.5rem;
+  border-bottom: 4px solid #000;
+}
+
+.presenter__header p {
+  margin: 0;
+}
+
+.presenter__wrapper-players {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  padding: 1rem;
+}
+
+.presenter__wrapper-players--duell {
+  grid-template-rows: minmax(0, 1fr);
 }
 
 .presenter-user-window__wrapper:nth-child(1) {

@@ -19,7 +19,7 @@ export function getPresenterLayout(state: PresenterState): PresenterLayout {
     case PresenterState.ImageSelection:
       return PresenterLayout.LargeContent;
     case PresenterState.Error:
-      return PresenterLayout.Normal;
+      return PresenterLayout.LargeContent;
   }
 }
 

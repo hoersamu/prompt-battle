@@ -1,10 +1,20 @@
+@font-face {
+  font-family: Permanent Marker;
+  font-style: normal;
+  font-weight: 400;
+  src: local("Permanent Marker Regular"), local("PermanentMarker-Regular"),
+    url(permanent-marker-regular.woff2) format("woff2");
+  font-display: block;
+}
+
 * {
   box-sizing: border-box;
+  font-family: Permanent Marker;
 }
 
 :root {
   --color-bg-pastell-1: hsl(205, 33%, 71%);
-  --color-bg-pastell-2: hsl(49, 100%, 92%);
+  --color-bg-pastell-2: hsl(10, 100%, 92%);
   --color-bg-pastell-3: hsl(44, 81%, 64%);
   --color-bg-pastell-4: hsl(76, 35%, 64%);
 }

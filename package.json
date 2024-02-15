@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.6",
+    "@vueuse/core": "^10.7.2",
     "nuxt": "^3.10.2",
     "typescript": "^5.3.3",
     "uuid": "^9.0.1",
@@ -19,6 +20,7 @@
   },
   "packageManager": "pnpm@8.15.2",
   "devDependencies": {
-    "@types/uuid": "^9.0.8"
+    "@types/uuid": "^9.0.8",
+    "@vueuse/nuxt": "^10.7.2"
   }
 }

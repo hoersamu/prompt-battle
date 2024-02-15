@@ -2,7 +2,7 @@ import { Events } from '@/config';
 import type { Player, PlayerPresence, PromptEvent } from '@/types';
 import { REALTIME_LISTEN_TYPES, REALTIME_PRESENCE_LISTEN_EVENTS, REALTIME_SUBSCRIBE_STATES, type RealtimePresenceJoinPayload, type RealtimePresenceLeavePayload } from '@supabase/supabase-js';
 
-export const usePresenterView = (roomId: string) => {
+export const usePresenterView = (roomId: string, test: () => void) => {
   const { joinChannel, channel } = useSupabase();
 
   const players = ref<Record<string, Player>>({});
@@ -45,6 +45,7 @@ export const usePresenterView = (roomId: string) => {
     .on(REALTIME_LISTEN_TYPES.PRESENCE, { event: REALTIME_PRESENCE_LISTEN_EVENTS.JOIN }, onJoin)
     .on(REALTIME_LISTEN_TYPES.PRESENCE, { event: REALTIME_PRESENCE_LISTEN_EVENTS.LEAVE }, onLeave)
     .on(REALTIME_LISTEN_TYPES.BROADCAST, { event: Events.PROMPT }, onPrompt)
+    .on(REALTIME_LISTEN_TYPES.BROADCAST, { event: Events.START_ROUND }, test)
     .subscribe(async (status) => {
       if (status !== REALTIME_SUBSCRIBE_STATES.SUBSCRIBED) {
         console.error('Failed to subscribe to presence channel. STATUS:', status)

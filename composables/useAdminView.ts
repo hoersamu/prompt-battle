@@ -4,10 +4,10 @@ import { REALTIME_LISTEN_TYPES } from '@supabase/supabase-js';
 import { useOpenAIImages } from './useOpenAIImages';
 
 export const useAdminView = (roomId: string) => {
-  const { players, channel } = usePresenterView(roomId);
+  const { players, channel } = usePresenterView(roomId, () => {});
   const { generateImages } = useOpenAIImages();
-   const time = ref(0);
-  const timeLimit = ref(20);
+  const time = ref(0);
+  const timeLimit = ref(30);
 
   let interval: NodeJS.Timeout;
 
@@ -27,7 +27,7 @@ export const useAdminView = (roomId: string) => {
     const playerlist = Object.values(players.value);
 
     const images = await generateImages(playerlist[0].prompt);
-    sendImages(images.data.map((image) => image.url as string));
+    sendImages(images);
   }
 
   const startRound = () => {

@@ -10,7 +10,15 @@ if (!room) {
   await navigateTo("/");
 }
 
-const { players } = usePresenterView(room);
+const { formattedTimeLeft, startCountdown } = useCountdown();
+
+const onRoundStart = ()=> {
+  startCountdown(30);
+}
+
+
+const { players } = usePresenterView(room, onRoundStart);
+
 
 definePageMeta({
   middleware: ['check-room'],
@@ -20,22 +28,21 @@ definePageMeta({
 <template>
   <div class="presenter__wrapper">
     <div class="presenter__header">
-      <p>Round 1 - 00:50</p>
-      <!-- <p>"A little frog jumping into the pond"</p> -->
+      <p>Round 1 - {{ formattedTimeLeft }}</p>
     </div>
     <div
       :class="{
         'presenter__wrapper-players': true,
-        'presenter__wrapper-players--duell': players.length <= 2,
+        'presenter__wrapper-players--duell': Object.keys(players).length <= 2,
       }"
     >
       <PresenterUserWindow
-        v-for="(player, index) in players"
-        :key="`player-${index}`"
+        v-for="(player, id) in players"
+        :key="`player-${id}`"
         :player="player"
-        :player-count="players.length"
-        :card-id="index"
-        :state="PresenterState.ImageSelection"
+        :player-count="Object.keys(players).length"
+        :card-id="id"
+        :state="PresenterState.Typing"
       />
     </div>
   </div>

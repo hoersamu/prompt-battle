@@ -7,16 +7,16 @@ import {
 import type { Player } from "@/types";
 import { useCssVar } from "@vueuse/core";
 
-const { player, playerCount, cardId, state } = defineProps<{
+const { player, cardId } = defineProps<{
   player: Player;
-  playerCount: number;
-  cardId: number;
-  state: PresenterState;
+  cardId: string;
 }>();
 
 const backgroundColor = useCssVar(`--color-bg-pastell-${cardId}`);
 
-let dataLayoutName = getPresenterLayoutText(getPresenterLayout(state));
+const dataLayoutName = computed(() =>
+  getPresenterLayoutText(getPresenterLayout(player.state))
+);
 </script>
 
 <template>
@@ -24,21 +24,21 @@ let dataLayoutName = getPresenterLayoutText(getPresenterLayout(state));
     <p class="presenter-user-window__name">
       {{ player.name }}
     </p>
-    <!-- <p
-      v-if="state === PresenterState.Waiting && points"
-      class="presenter-user-window__subheading"
-    >
-      {{ points }}
-    </p> -->
     <p
-      v-if="state === PresenterState.Typing"
+      v-if="player.state === PresenterState.Overview"
+      class="presenter-user-window__points"
+    >
+      3
+    </p>
+    <p
+      v-if="player.state === PresenterState.Typing"
       class="presenter-user-window__text"
     >
       {{ player.prompt }}
       <span class="presenter-user-window__caret">_</span>
     </p>
     <div
-      v-if="state === PresenterState.Error"
+      v-if="player.state === PresenterState.Error"
       class="presenter-user-window__error"
     >
       <p>❌</p>
@@ -46,7 +46,14 @@ let dataLayoutName = getPresenterLayoutText(getPresenterLayout(state));
       <p>You violated the TOS</p>
     </div>
 
-    <PresenterImageGallery v-if="state === PresenterState.ImageSelection" />
+    <PresenterImageGallery
+      v-if="
+        player.state === PresenterState.ImageSelection ||
+        player.state === PresenterState.ImageSelected
+      "
+      :images="player.images"
+      :index="player.selectedImage"
+    />
   </div>
 </template>
 
@@ -92,8 +99,8 @@ let dataLayoutName = getPresenterLayoutText(getPresenterLayout(state));
   border: none;
 }
 
-.presenter-user-window__subheading {
-  font-size: 3rem;
+.presenter-user-window__points {
+  font-size: 6rem;
   margin: 0;
 }
 

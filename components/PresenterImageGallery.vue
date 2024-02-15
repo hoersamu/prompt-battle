@@ -1,34 +1,46 @@
+<script setup lang="ts">
+defineProps<{ images: string[]; index?: number }>();
+</script>
+
 <template>
-  <div class="presenter-image-gallery__images">
-    <img
-      class="presenter-image-gallery__image"
-      src="https://images.pexels.com/photos/9754/mountains-clouds-forest-fog.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-    />
-    <img
-      class="presenter-image-gallery__image"
-      src="https://images.pexels.com/photos/9754/mountains-clouds-forest-fog.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-    />
-    <img
-      class="presenter-image-gallery__image"
-      src="https://images.pexels.com/photos/9754/mountains-clouds-forest-fog.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-    />
-    <img
-      class="presenter-image-gallery__image"
-      src="https://images.pexels.com/photos/3030647/pexels-photo-3030647.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-    />
+  <div
+    :class="[
+      'presenter-image-gallery__wrapper',
+      { 'presenter-image-gallery__wrapper--active': index !== undefined },
+    ]"
+  >
+    <template v-if="index !== undefined">
+      <img class="presenter-image-gallery__image" :src="images[index]" />
+    </template>
+    <template v-else>
+      <img
+        v-for="img in images"
+        class="presenter-image-gallery__image"
+        :key="img"
+        :src="img"
+      />
+    </template>
   </div>
 </template>
 
 <style>
-.presenter-image-gallery__images {
+.presenter-image-gallery__wrapper {
   max-height: 100%;
   max-width: 100%;
+
+  height: 100%;
+  width: 100%;
   display: grid;
   gap: 0.5rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-template-rows: repeat(2, minmax(0, 1fr));
   align-items: center;
   padding: 1rem;
+}
+
+.presenter-image-gallery__wrapper--active {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  grid-template-rows: repeat(1, minmax(0, 1fr));
 }
 
 .presenter-image-gallery__image {

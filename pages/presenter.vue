@@ -12,16 +12,14 @@ if (!room) {
 
 const { formattedTimeLeft, startCountdown } = useCountdown();
 
-const onRoundStart = ()=> {
+const onRoundStart = () => {
   startCountdown(30);
-}
-
+};
 
 const { players } = usePresenterView(room, onRoundStart);
 
-
 definePageMeta({
-  middleware: ['check-room'],
+  middleware: ["check-room"],
 });
 </script>
 
@@ -42,7 +40,6 @@ definePageMeta({
         :player="player"
         :player-count="Object.keys(players).length"
         :card-id="id"
-        :state="PresenterState.Typing"
       />
     </div>
   </div>
@@ -59,6 +56,7 @@ body {
 
 <style scoped>
 .presenter__wrapper {
+  transition: all 100ms ease-out;
   height: 100%;
   display: grid;
   grid-template-rows: min-content minmax(0, 1fr);

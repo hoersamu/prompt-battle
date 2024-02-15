@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const usePlayerView = (prompt: Ref<string>) => {
   const { joinChannel, channel } = useSupabase();
-  const id = uuidv4();
+  const playerId = uuidv4();
   const state = ref<PLAYER_STATES>(PLAYER_STATES.NAME_INPUT);
   const images = ref<string[]>([]);
   const timeLimit = ref<number>(0);
@@ -30,6 +30,8 @@ export const usePlayerView = (prompt: Ref<string>) => {
   };
 
   const onImagesReady = ({payload}: ImagesReadyEvent) => {
+    if(payload.playerId !== playerId) return;
+
     images.value = payload.images;
     state.value = PLAYER_STATES.IMAGE_SELECTION;
   };
@@ -45,7 +47,7 @@ export const usePlayerView = (prompt: Ref<string>) => {
           return
         }
 
-        const res = await channel.value?.track({ name, id });
+        const res = await channel.value?.track({ name, id: playerId });
 
         if (res !== 'ok') {
           console.error('Failed to track player', res)
@@ -57,7 +59,7 @@ export const usePlayerView = (prompt: Ref<string>) => {
 
   const selectImage = (index: number) => {
     const payload: ImageSelectEvent['payload'] = {
-      playerId: id,
+      playerId,
       imageIndex: index,
     }
 
@@ -73,7 +75,7 @@ export const usePlayerView = (prompt: Ref<string>) => {
   watch(prompt, async (newPrompt) => {
     if (newPrompt) {
       const payload: PromptEvent['payload'] = {
-        playerId: id,
+        playerId,
         prompt: newPrompt
       }
 

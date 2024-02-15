@@ -1,8 +1,12 @@
 import { Events } from '@/config';
-import type { Player, PlayerPresence, PromptEvent } from '@/types';
+import { PLAYER_STATES } from '@/config/players';
+import type { GameStartEvent, ImageSelectEvent, ImagesReadyEvent, Player, PlayerPresence, PromptEvent } from '@/types';
 import { REALTIME_LISTEN_TYPES, REALTIME_PRESENCE_LISTEN_EVENTS, REALTIME_SUBSCRIBE_STATES, type RealtimePresenceJoinPayload, type RealtimePresenceLeavePayload } from '@supabase/supabase-js';
 
-export const usePresenterView = (roomId: string, test: () => void = () => {}) => {
+export const usePresenterView = (
+  roomId: string,
+  onRoundStartCallback: (event: GameStartEvent) => void = () => { }
+) => {
   const { joinChannel, channel } = useSupabase();
 
   const players = ref<Record<string, Player>>({});
@@ -15,7 +19,10 @@ export const usePresenterView = (roomId: string, test: () => void = () => {}) =>
         if (!players.value[id]) {
           players.value[id] = {
             name,
-            prompt: ''
+            prompt: '',
+            state: PLAYER_STATES.READY,
+            images: [],
+            selectedImage: 0,
           };
         }
       })
@@ -32,11 +39,28 @@ export const usePresenterView = (roomId: string, test: () => void = () => {}) =>
     console.log(REALTIME_PRESENCE_LISTEN_EVENTS.LEAVE, key, leftPresences)
   }
 
-  const onPrompt = ({ payload }: PromptEvent) => {
+  const onPromptUpdate = ({ payload }: PromptEvent) => {
     if (payload.playerId in players.value) {
       players.value[payload.playerId].prompt = payload.prompt
     }
   }
+
+  const onImagesReady = ({ payload }: ImagesReadyEvent) => {
+    players.value[payload.playerId].images = payload.images;
+    players.value[payload.playerId].state = PLAYER_STATES.IMAGE_SELECTION;
+  };
+
+  const onSelectImage = ({ payload }: ImageSelectEvent) => {
+    players.value[payload.playerId].selectedImage = payload.imageIndex;
+    players.value[payload.playerId].state = PLAYER_STATES.IMAGE_SELECTED;
+  };
+
+  const onRoundStart = (event: GameStartEvent) => {
+    Object.values(players.value).forEach(player => {
+      player.state = PLAYER_STATES.PLAYING;
+    });
+    onRoundStartCallback(event);
+  };
 
   onMounted(() => {
     joinChannel(roomId);
@@ -44,8 +68,10 @@ export const usePresenterView = (roomId: string, test: () => void = () => {}) =>
     channel.value?.on(REALTIME_LISTEN_TYPES.PRESENCE, { event: REALTIME_PRESENCE_LISTEN_EVENTS.SYNC }, onSync)
       .on(REALTIME_LISTEN_TYPES.PRESENCE, { event: REALTIME_PRESENCE_LISTEN_EVENTS.JOIN }, onJoin)
       .on(REALTIME_LISTEN_TYPES.PRESENCE, { event: REALTIME_PRESENCE_LISTEN_EVENTS.LEAVE }, onLeave)
-      .on(REALTIME_LISTEN_TYPES.BROADCAST, { event: Events.PROMPT }, onPrompt)
-      .on(REALTIME_LISTEN_TYPES.BROADCAST, { event: Events.START_ROUND }, test)
+      .on(REALTIME_LISTEN_TYPES.BROADCAST, { event: Events.PROMPT }, onPromptUpdate)
+      .on(REALTIME_LISTEN_TYPES.BROADCAST, { event: Events.START_ROUND }, onRoundStart)
+      .on(REALTIME_LISTEN_TYPES.BROADCAST, { event: Events.IMAGES_READY }, onImagesReady)
+      .on(REALTIME_LISTEN_TYPES.BROADCAST, { event: Events.SELECT_IMAGE }, onSelectImage)
       .subscribe(async (status) => {
         if (status !== REALTIME_SUBSCRIBE_STATES.SUBSCRIBED) {
           console.error('Failed to subscribe to presence channel. STATUS:', status)

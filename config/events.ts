@@ -7,4 +7,5 @@ export enum Events {
   IMAGES_READY = 'images-ready',
   SELECT_IMAGE = 'select-image',
   STATE_CHANGE = 'state-change',
+  TOS_VIOLATION = 'tos-violation',
 }

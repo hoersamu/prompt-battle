@@ -25,11 +25,18 @@ export interface ImageSelectEvent extends GenericEvent {
 export interface ImagesReadyEvent extends GenericEvent {
   payload: {
     images: string[];
+    playerId: string;
   }
 }
 
 export interface GameStartEvent extends GenericEvent {
   payload: {
     timeLimit: number;
+  }
+}
+
+export interface ToSViolation extends GenericEvent {
+  payload: {
+    playerId: string;
   }
 }

@@ -1,5 +1,5 @@
 import { Events } from '@/config';
-import type { GameStartEvent, ImagesReadyEvent } from '@/types';
+import type { GameStartEvent, ImagesReadyEvent, ToSViolation } from '@/types';
 import { REALTIME_LISTEN_TYPES } from '@supabase/supabase-js';
 import { useOpenAIImages } from './useOpenAIImages';
 
@@ -11,9 +11,10 @@ export const useAdminView = (roomId: string) => {
 
   let interval: NodeJS.Timeout;
 
-  const sendImages = (images: string[]) => {
+  const sendImages = (playerId: string, images: string[]) => {
     const payload: ImagesReadyEvent['payload'] = {
-      images
+      images,
+      playerId
     }
 
     channel.value?.send({
@@ -23,11 +24,26 @@ export const useAdminView = (roomId: string) => {
     })
   }
 
-  const startImageGeneration = async () => {
-    const playerlist = Object.values(players.value);
+  const sendTosViolation = (playerId: string) => {
+    const payload: ToSViolation['payload'] = {
+      playerId
+    }
 
-    const images = await generateImages(playerlist[0].prompt);
-    sendImages(images);
+    channel.value?.send({
+      type: REALTIME_LISTEN_TYPES.BROADCAST,
+      payload,
+      event: Events.TOS_VIOLATION
+    })
+  }
+
+  const startImageGeneration = async () => {
+    const playerlist = Object.entries(players.value);
+
+    playerlist.forEach(([playerId, { prompt }]) => {
+      generateImages(prompt).then((images) => {
+        sendImages(playerId, images);
+      }).catch(() => { sendTosViolation(playerId) })
+    });
   }
 
   const startRound = () => {

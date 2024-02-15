@@ -5,15 +5,15 @@ import { REALTIME_LISTEN_TYPES, REALTIME_PRESENCE_LISTEN_EVENTS, REALTIME_SUBSCR
 export const usePresenterView = (roomId: string) => {
   const { joinChannel, channel } = useSupabase();
 
-  const players = reactive<Record<string, Player>>({});
+  const players = ref<Record<string, Player>>({});
 
   const onSync = () => {
     const newState = channel.value?.presenceState<PlayerPresence>()
 
     if (newState && newState.players) {
       newState.players.forEach(({id, name}) => {
-        if (!players[id]) {
-          players[id] = {
+        if (!players.value[id]) {
+          players.value[id] = {
             name,
             prompt: ''
           };
@@ -33,8 +33,8 @@ export const usePresenterView = (roomId: string) => {
   }
 
   const onPrompt = ({payload}: PromptEvent) => {
-    if(payload.playerId in players) {
-      players[payload.playerId].prompt = payload.prompt
+    if(payload.playerId in players.value) {
+      players.value[payload.playerId].prompt = payload.prompt
     }
   }
 
@@ -54,6 +54,7 @@ export const usePresenterView = (roomId: string) => {
   })
 
   return {
+    channel,
     players
   }
 }

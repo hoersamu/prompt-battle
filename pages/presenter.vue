@@ -10,26 +10,11 @@ if (!room) {
   await navigateTo("/");
 }
 
-const { players } = {
-  players: [
-    {
-      name: "Thomas",
-      prompt: "sdfkljsdlkfjsdklfjlsdjflkjsdklf",
-    },
-    {
-      name: "Samuel",
-      prompt: "sdfkljsdlkfjsdklfjlsdjflkjsdklf",
-    },
-    {
-      name: "Thomas",
-      prompt: "sdfkljsdlkfjsdklfjlsdjflkjsdklf",
-    },
-    {
-      name: "Samuel",
-      prompt: "sdfkljsdlkfjsdklfjlsdjflkjsdklf",
-    },
-  ],
-};
+const { players } = usePresenterView(room);
+
+definePageMeta({
+  middleware: ['check-room'],
+});
 </script>
 
 <template>

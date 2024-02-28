@@ -1,21 +1,21 @@
 <script setup lang="ts">
+import { useCssVar } from "@vueuse/core";
 import {
   PresenterState,
   getPresenterLayout,
   getPresenterLayoutText,
 } from "@/config/presenter";
 import type { Player } from "@/types";
-import { useCssVar } from "@vueuse/core";
 
 const { player, cardId } = defineProps<{
-  player: Player;
-  cardId: string;
+  player: Player
+  cardId: string
 }>();
 
 const backgroundColor = useCssVar(`--color-bg-pastell-${cardId}`);
 
 const dataLayoutName = computed(() =>
-  getPresenterLayoutText(getPresenterLayout(player.state))
+  getPresenterLayoutText(getPresenterLayout(player.state)),
 );
 </script>
 
@@ -37,22 +37,16 @@ const dataLayoutName = computed(() =>
       {{ player.prompt }}
       <span class="presenter-user-window__caret">_</span>
     </p>
-    <div
+    <ToSViolation
       v-if="player.state === PresenterState.Error"
-      class="presenter-user-window__error"
-    >
-      <p>❌</p>
-      <p>ERROR</p>
-      <p>You violated the TOS</p>
-    </div>
-
+    />
     <PresenterImageGallery
       v-if="
-        player.state === PresenterState.ImageSelection ||
-        player.state === PresenterState.ImageSelected
+        player.state === PresenterState.ImageSelection
+          || player.state === PresenterState.ImageSelected
       "
       :images="player.images"
-      :index="player.selectedImage"
+      :selected-image="player.selectedImage"
     />
   </div>
 </template>
@@ -136,19 +130,5 @@ const dataLayoutName = computed(() =>
   flex-direction: column;
   justify-content: center;
   align-items: center;
-}
-
-.presenter-user-window__error p {
-  font-size: 2rem;
-  margin: 0;
-}
-
-.presenter-user-window__error p:first-of-type {
-  font-size: 5rem;
-  background-color: #fff;
-  border-radius: 25%;
-  padding: 0.5rem;
-  border: 4px solid black;
-  margin: 0 0 1rem 0;
 }
 </style>

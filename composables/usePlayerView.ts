@@ -1,10 +1,10 @@
-import { Events } from '@/config';
-import { PLAYER_STATES } from '@/config/players';
-import type { GameStartEvent, ImageSelectEvent, ImagesReadyEvent, PromptEvent, ToSViolation } from '@/types';
-import { REALTIME_LISTEN_TYPES, REALTIME_SUBSCRIBE_STATES } from '@supabase/supabase-js';
-import { v4 as uuidv4 } from 'uuid';
+import { REALTIME_LISTEN_TYPES, REALTIME_SUBSCRIBE_STATES } from "@supabase/supabase-js";
+import { v4 as uuidv4 } from "uuid";
+import { Events } from "@/config";
+import { PLAYER_STATES } from "@/config/players";
+import type { GameStartEvent, ImageSelectEvent, ImagesReadyEvent, PromptEvent, ToSViolationEvent } from "@/types";
 
-export const usePlayerView = (prompt: Ref<string>) => {
+export function usePlayerView(prompt: Ref<string>) {
   const { joinChannel, channel } = useSupabase();
   const playerId = uuidv4();
   const state = ref<PLAYER_STATES>(PLAYER_STATES.NAME_INPUT);
@@ -14,7 +14,7 @@ export const usePlayerView = (prompt: Ref<string>) => {
 
   let interval: NodeJS.Timeout;
 
-  const onGameStart = ({payload}: GameStartEvent) => {
+  const onGameStart = ({ payload }: GameStartEvent) => {
     state.value = PLAYER_STATES.PLAYING;
     timeLimit.value = payload.timeLimit;
     timeLeft.value = payload.timeLimit;
@@ -26,18 +26,20 @@ export const usePlayerView = (prompt: Ref<string>) => {
         state.value = PLAYER_STATES.WAITING;
         clearInterval(interval);
       }
-    }, 1000)
+    }, 1000);
   };
 
-  const onImagesReady = ({payload}: ImagesReadyEvent) => {
-    if(payload.playerId !== playerId) return;
+  const onImagesReady = ({ payload }: ImagesReadyEvent) => {
+    if (payload.playerId !== playerId)
+      return;
 
     images.value = payload.images;
     state.value = PLAYER_STATES.IMAGE_SELECTION;
   };
 
-  const onTosViolation = ({payload}: ToSViolation) => {
-    if(payload.playerId !== playerId) return;
+  const onTosViolation = ({ payload }: ToSViolationEvent) => {
+    if (payload.playerId !== playerId)
+      return;
 
     state.value = PLAYER_STATES.TOS_VIOLATION;
   };
@@ -50,47 +52,46 @@ export const usePlayerView = (prompt: Ref<string>) => {
       .on(REALTIME_LISTEN_TYPES.BROADCAST, { event: Events.TOS_VIOLATION }, onTosViolation)
       .subscribe(async (status) => {
         if (status !== REALTIME_SUBSCRIBE_STATES.SUBSCRIBED) {
-          console.error('Failed to subscribe to presence channel. STATUS:', status)
-          return
+          console.error("Failed to subscribe to presence channel. STATUS:", status);
+          return;
         }
 
         const res = await channel.value?.track({ name, id: playerId });
 
-        if (res !== 'ok') {
-          console.error('Failed to track player', res)
-        }
+        if (res !== "ok")
+          console.error("Failed to track player", res);
 
         state.value = PLAYER_STATES.READY;
       });
   };
 
   const selectImage = (index: number) => {
-    const payload: ImageSelectEvent['payload'] = {
+    const payload: ImageSelectEvent["payload"] = {
       playerId,
       imageIndex: index,
-    }
+    };
 
     channel.value?.send({
       type: REALTIME_LISTEN_TYPES.BROADCAST,
       payload,
-      event: Events.SELECT_IMAGE
-    })
+      event: Events.SELECT_IMAGE,
+    });
 
     state.value = PLAYER_STATES.IMAGE_SELECTED;
-  }
+  };
 
   watch(prompt, async (newPrompt) => {
     if (newPrompt) {
-      const payload: PromptEvent['payload'] = {
+      const payload: PromptEvent["payload"] = {
         playerId,
-        prompt: newPrompt
-      }
+        prompt: newPrompt,
+      };
 
       channel.value?.send({
         type: REALTIME_LISTEN_TYPES.BROADCAST,
         payload,
-        event: Events.PROMPT
-      })
+        event: Events.PROMPT,
+      });
     }
   });
 
@@ -105,5 +106,5 @@ export const usePlayerView = (prompt: Ref<string>) => {
     timeLimit,
     images,
     selectImage,
-  }
+  };
 }

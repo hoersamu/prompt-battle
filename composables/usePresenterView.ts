@@ -1,13 +1,3 @@
-import { Events } from "@/config";
-import { PLAYER_STATES } from "@/config/players";
-import type {
-  GameStartEvent,
-  ImageSelectEvent,
-  ImagesReadyEvent,
-  Player,
-  PlayerPresence,
-  PromptEvent,
-} from "@/types";
 import {
   REALTIME_LISTEN_TYPES,
   REALTIME_PRESENCE_LISTEN_EVENTS,
@@ -16,11 +6,18 @@ import {
   type RealtimePresenceLeavePayload,
 } from "@supabase/supabase-js";
 import { PresenterState } from "../config/presenter";
+import { Events } from "@/config";
+import type {
+  GameStartEvent,
+  ImageSelectEvent,
+  ImagesReadyEvent,
+  Player,
+  PlayerPresence,
+  PromptEvent,
+  ToSViolationEvent,
+} from "@/types";
 
-export const usePresenterView = (
-  roomId: string,
-  onRoundStartCallback: (event: GameStartEvent) => void = () => {}
-) => {
+export function usePresenterView(roomId: string, onRoundStartCallback: (event: GameStartEvent) => void = () => {}) {
   const { joinChannel, channel } = useSupabase();
 
   const players = ref<Record<string, Player>>({});
@@ -60,9 +57,8 @@ export const usePresenterView = (
   };
 
   const onPromptUpdate = ({ payload }: PromptEvent) => {
-    if (payload.playerId in players.value) {
+    if (payload.playerId in players.value)
       players.value[payload.playerId].prompt = payload.prompt;
-    }
   };
 
   const onImagesReady = ({ payload }: ImagesReadyEvent) => {
@@ -73,6 +69,10 @@ export const usePresenterView = (
   const onSelectImage = ({ payload }: ImageSelectEvent) => {
     players.value[payload.playerId].selectedImage = payload.imageIndex;
     players.value[payload.playerId].state = PresenterState.ImageSelected;
+  };
+
+  const onToSViolation = ({ payload }: ToSViolationEvent) => {
+    players.value[payload.playerId].state = PresenterState.Error;
   };
 
   const onRoundStart = (event: GameStartEvent) => {
@@ -89,45 +89,44 @@ export const usePresenterView = (
       ?.on(
         REALTIME_LISTEN_TYPES.PRESENCE,
         { event: REALTIME_PRESENCE_LISTEN_EVENTS.SYNC },
-        onSync
+        onSync,
       )
       .on(
         REALTIME_LISTEN_TYPES.PRESENCE,
         { event: REALTIME_PRESENCE_LISTEN_EVENTS.JOIN },
-        onJoin
+        onJoin,
       )
       .on(
         REALTIME_LISTEN_TYPES.PRESENCE,
         { event: REALTIME_PRESENCE_LISTEN_EVENTS.LEAVE },
-        onLeave
+        onLeave,
       )
       .on(
         REALTIME_LISTEN_TYPES.BROADCAST,
         { event: Events.PROMPT },
-        onPromptUpdate
+        onPromptUpdate,
       )
       .on(
         REALTIME_LISTEN_TYPES.BROADCAST,
         { event: Events.START_ROUND },
-        onRoundStart
+        onRoundStart,
       )
       .on(
         REALTIME_LISTEN_TYPES.BROADCAST,
         { event: Events.IMAGES_READY },
-        onImagesReady
+        onImagesReady,
       )
       .on(
         REALTIME_LISTEN_TYPES.BROADCAST,
         { event: Events.SELECT_IMAGE },
-        onSelectImage
-      )
+        onSelectImage,
+      ).on(REALTIME_LISTEN_TYPES.BROADCAST, { event: Events.TOS_VIOLATION }, onToSViolation)
       .subscribe(async (status) => {
         if (status !== REALTIME_SUBSCRIBE_STATES.SUBSCRIBED) {
           console.error(
             "Failed to subscribe to presence channel. STATUS:",
-            status
+            status,
           );
-          return;
         }
       });
   });
@@ -136,4 +135,4 @@ export const usePresenterView = (
     channel,
     players,
   };
-};
+}

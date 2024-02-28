@@ -1,12 +1,3 @@
-@font-face {
-  font-family: Permanent Marker;
-  font-style: normal;
-  font-weight: 400;
-  src: local("Permanent Marker Regular"), local("PermanentMarker-Regular"),
-    url(permanent-marker-regular.woff2) format("woff2");
-  font-display: block;
-}
-
 * {
   box-sizing: border-box;
   font-family: Permanent Marker;
@@ -29,6 +20,7 @@ body {
   margin: 0;
 }
 
+//
 #__nuxt {
   height: 100%;
 }

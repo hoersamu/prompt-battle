@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineProps<{
-  images: string[];
+  images: string[]
 }>();
 
 defineEmits<{
@@ -10,8 +10,8 @@ defineEmits<{
 
 <template>
   <div class="player-image-selection">
-    <div class="player-image-selection__image-wrapper" v-for="(image, index) in images">
-      <img class="player-image-selection__image" :src="image" :key="index" @click="$emit('selectImage', index)" />
+    <div v-for="(image, index) in images" :key="image" class="player-image-selection__image-wrapper">
+      <img class="player-image-selection__image" :src="image" @click="$emit('selectImage', index)">
     </div>
   </div>
 </template>

@@ -1,12 +1,11 @@
 <script setup lang="ts">
 const {
   timeLimit,
-  timeLeft
+  timeLeft,
 } = defineProps<{
-  timeLimit: number;
-  timeLeft: number;
+  timeLimit: number
+  timeLeft: number
 }>();
-
 
 const FULL_DASH_ARRAY = 283;
 const WARNING_THRESHOLD = 10;
@@ -14,28 +13,27 @@ const ALERT_THRESHOLD = 5;
 
 const COLOR_CODES = {
   info: {
-    color: "green"
+    color: "green",
   },
   warning: {
     color: "orange",
-    threshold: WARNING_THRESHOLD
+    threshold: WARNING_THRESHOLD,
   },
   alert: {
     color: "red",
-    threshold: ALERT_THRESHOLD
-  }
+    threshold: ALERT_THRESHOLD,
+  },
 };
 
 const formatedTime = computed(() => {
   const minutes = Math.floor(timeLeft / 60);
   let seconds: string | number = timeLeft % 60;
 
-  if (seconds < 10) {
+  if (seconds < 10)
     seconds = `0${seconds}`;
-  }
 
   return `${minutes}:${seconds}`;
-})
+});
 
 function calculateTimeFraction() {
   const rawTimeFraction = timeLeft / timeLimit;
@@ -44,13 +42,12 @@ function calculateTimeFraction() {
 
 const pathColor = computed(() => {
   const { alert, warning, info } = COLOR_CODES;
-  if (timeLeft <= alert.threshold) {
+  if (timeLeft <= alert.threshold)
     return alert.color;
-  } else if (timeLeft <= warning.threshold) {
+  else if (timeLeft <= warning.threshold)
     return warning.color;
-  } else {
+  else
     return info.color;
-  }
 });
 
 const circleDashArray = computed(() => {
@@ -62,14 +59,16 @@ const circleDashArray = computed(() => {
   <div class="base-timer">
     <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
       <g class="base-timer__circle">
-        <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45"></circle>
-        <path id="base-timer-path-remaining" :stroke-dasharray="circleDashArray" class="base-timer__path-remaining"
+        <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45" />
+        <path
+          id="base-timer-path-remaining" :stroke-dasharray="circleDashArray" class="base-timer__path-remaining"
           :color="pathColor" d="
           M 50, 50
           m -45, 0
           a 45,45 0 1,0 90,0
           a 45,45 0 1,0 -90,0
-        "></path>
+        "
+        />
       </g>
     </svg>
     <span id="base-timer-label" class="base-timer__label">{{ formatedTime }}</span>
@@ -124,5 +123,4 @@ body {
   justify-content: center;
   font-size: 48px;
 }
-
 </style>

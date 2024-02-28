@@ -1,10 +1,10 @@
-import { createClient, REALTIME_LISTEN_TYPES, REALTIME_PRESENCE_LISTEN_EVENTS, REALTIME_SUBSCRIBE_STATES, type RealtimeChannel, type RealtimeChannelSendResponse } from '@supabase/supabase-js';
+import { type RealtimeChannel, createClient } from "@supabase/supabase-js";
 import {
   SUPABASE_KEY,
-  SUPABASE_URL
-} from '@/config/supabase';
+  SUPABASE_URL,
+} from "@/config/supabase";
 
-export const useSupabase = () => {
+export function useSupabase() {
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
   const channel = ref<RealtimeChannel>();
 
@@ -12,7 +12,7 @@ export const useSupabase = () => {
     channel.value = supabase.channel(room, {
       config: {
         broadcast: { self: true },
-        presence: { key: 'players' }
+        presence: { key: "players" },
       },
     });
   };
@@ -20,5 +20,5 @@ export const useSupabase = () => {
   return {
     joinChannel,
     channel,
-  }
+  };
 }

@@ -1,11 +1,13 @@
 <script setup lang="ts">
-const { startRound } = useAdminView('2');
+const { startRound } = useAdminView("2");
 </script>
 
 <template>
   <div class="admin-view">
     <h1>Admin</h1>
-    <button @click="startRound">Start Round</button>
+    <button @click="startRound">
+      Start Round
+    </button>
   </div>
 </template>
 

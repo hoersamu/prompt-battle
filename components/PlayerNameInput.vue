@@ -1,15 +1,17 @@
 <script setup lang="ts">
-const name = defineModel<string>();
-
 const emit = defineEmits<{
   submit: []
 }>();
+
+const name = defineModel<string>();
 </script>
 
 <template>
   <div class="player-name">
-    <input v-model="name" class="player-name__input" autofocus />
-    <button @click="emit('submit')" class="player-name__button">Play</button>
+    <input v-model="name" class="player-name__input" autofocus>
+    <button class="player-name__button" @click="emit('submit')">
+      Play
+    </button>
   </div>
 </template>
 
@@ -41,7 +43,6 @@ const emit = defineEmits<{
     font-weight: bold;
     text-transform: uppercase;
     font-size: 20px;
-
 
     &:hover {
       background-image: linear-gradient(rgb(0 0 0/10%) 0 0);

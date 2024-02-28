@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import { PLAYER_STATES } from '@/config/players';
-import { useStorage } from '@vueuse/core';
+import { useStorage } from "@vueuse/core";
+import { PLAYER_STATES } from "@/config/players";
 
 const route = useRoute();
 
-const room = route.query.room?.toString() ?? '';
+const room = route.query.room?.toString() ?? "";
 
-const name = useStorage(room, '');
-const prompt = ref('');
+const name = useStorage(room, "");
+const prompt = ref("");
 const selectedImage = ref<number>();
 
 const { joinRoom, state, timeLeft, timeLimit, images, selectImage } = usePlayerView(prompt);
 
-const join = async () => {
+async function join() {
   await joinRoom(room, name.value);
 }
 
 const showPlayerGameScreen = computed(() => [
   PLAYER_STATES.READY,
   PLAYER_STATES.PLAYING,
-  PLAYER_STATES.WAITING
+  PLAYER_STATES.WAITING,
 ].includes(state.value));
 
 const showImageSelection = computed(() => [
@@ -28,27 +28,29 @@ const showImageSelection = computed(() => [
 ].includes(state.value));
 
 onBeforeMount(() => {
-  if (name.value) {
+  if (name.value)
     join();
-  }
 });
 
-const onImageSelected = (index: number) => {
+function onImageSelected(index: number) {
   selectedImage.value = index;
   selectImage(index);
-};
+}
 
 definePageMeta({
-  middleware: ['check-room'],
+  middleware: ["check-room"],
 });
 </script>
 
 <template>
   <div class="player-view">
-    <PlayerNameInput v-model="name" @submit.once="join" v-if="state === PLAYER_STATES.NAME_INPUT" />
-    <PlayerGameScreen v-if="showPlayerGameScreen" :state="state" v-model="prompt" :time="timeLeft"
-      :time-limit="timeLimit" />
-    <PresenterImageGallery v-if="showImageSelection" :images="images" @select-image="onImageSelected" interactive :index="selectedImage" />
+    <PlayerNameInput v-if="state === PLAYER_STATES.NAME_INPUT" v-model="name" @submit.once="join" />
+    <PlayerGameScreen
+      v-if="showPlayerGameScreen" v-model="prompt" :state="state" :time="timeLeft"
+      :time-limit="timeLimit"
+    />
+    <PresenterImageGallery v-if="showImageSelection" :images="images" interactive :selected-image="selectedImage" @select-image="onImageSelected" />
+    <ToSViolation v-if="state === PLAYER_STATES.TOS_VIOLATION" />
   </div>
 </template>
 

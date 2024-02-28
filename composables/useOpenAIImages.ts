@@ -1,15 +1,17 @@
-import OpenAI from 'openai';
+import OpenAI from "openai";
 
-export const useOpenAIImages = () => {
+export function useOpenAIImages() {
   const generateImages = async (prompt: string): Promise<string[]> => {
-    // const openai = new OpenAI({ apiKey: '', dangerouslyAllowBrowser: true });
+    const openai = new OpenAI({ apiKey: "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", dangerouslyAllowBrowser: true });
 
-    return [
-      'https://placekitten.com/200/200',
-      'https://placekitten.com/201/201',
-      'https://placekitten.com/202/202',
-      'https://placekitten.com/203/203',
-    ];
+    // throw new Error('OpenAI API key not set');
+
+    // return [
+    //   'https://placekitten.com/200/200',
+    //   'https://placekitten.com/201/201',
+    //   'https://placekitten.com/202/202',
+    //   'https://placekitten.com/203/203',
+    // ];
 
     // Throws 400
     // {
@@ -20,16 +22,16 @@ export const useOpenAIImages = () => {
     //     "type": "invalid_request_error"
     //   }
     // }
-    // return openai.images.generate({
-    //   prompt,
-    //   model: 'dall-e-2',
-    //   n: 4,
-    // }).then((response) => {
-    //   return response.data.map((image) => image.url as string);
-    // });
+    return openai.images.generate({
+      prompt,
+      model: "dall-e-2",
+      n: 4,
+    }).then((response) => {
+      return response.data.map(image => image.url as string);
+    });
   };
 
   return {
-    generateImages
-  }
+    generateImages,
+  };
 }

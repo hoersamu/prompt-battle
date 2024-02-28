@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { PresenterState } from "../config/presenter";
-
 const route = useRoute();
 
 const room = route.query.room?.toString() ?? "";
@@ -12,9 +10,9 @@ if (!room) {
 
 const { formattedTimeLeft, startCountdown } = useCountdown();
 
-const onRoundStart = () => {
+function onRoundStart() {
   startCountdown(30);
-};
+}
 
 const { players } = usePresenterView(room, onRoundStart);
 
@@ -29,8 +27,7 @@ definePageMeta({
       <p>Round 1 - {{ formattedTimeLeft }}</p>
     </div>
     <div
-      :class="{
-        'presenter__wrapper-players': true,
+      class="presenter__wrapper-players" :class="{
         'presenter__wrapper-players--duell': Object.keys(players).length <= 2,
       }"
     >

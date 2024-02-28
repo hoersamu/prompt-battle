@@ -1,23 +1,24 @@
 <script setup lang="ts">
-import { PLAYER_STATES } from '@/config/players';
+import { PLAYER_STATES } from "@/config/players";
 
 const { state, time, timeLimit } = defineProps<{
-  state: PLAYER_STATES;
-  time: number;
-  timeLimit: number;
+  state: PLAYER_STATES
+  time: number
+  timeLimit: number
 }>();
 
 const prompt = defineModel<string>();
 
 const textAreaDisabled = computed(() => state !== PLAYER_STATES.PLAYING);
-
 </script>
 
 <template>
   <div class="player-game-screen">
-    <Timer :time-left="time" :time-limit="timeLimit"></Timer>
+    <Timer :time-left="time" :time-limit="timeLimit" />
     <textarea v-model="prompt" :disabled="textAreaDisabled" />
-    <div class="player-game-screen__overlay" v-if="state === PLAYER_STATES.WAITING">Generating Images</div>
+    <div v-if="state === PLAYER_STATES.WAITING" class="player-game-screen__overlay">
+      Generating Images
+    </div>
   </div>
 </template>
 

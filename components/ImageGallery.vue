@@ -1,8 +1,8 @@
 <script setup lang="ts">
 defineProps<{
-  images: string[];
-  index?: number;
-  interactive?: boolean;
+  images: string[]
+  selectedImage?: number
+  interactive?: boolean
 }>();
 
 defineEmits<{
@@ -11,19 +11,28 @@ defineEmits<{
 </script>
 
 <template>
-  <div :class="[
-    'presenter-image-gallery__wrapper',
-    { 'presenter-image-gallery__wrapper--active': index !== undefined },
-    { 'presenter-image-gallery__wrapper--interactive': interactive },
-  ]">
-    <template v-if="index !== undefined">
-      <img class="presenter-image-gallery__image" :src="images[index]" />
+  <div
+    class="presenter-image-gallery__wrapper" :class="[
+      { 'presenter-image-gallery__wrapper--active': selectedImage !== undefined },
+      { 'presenter-image-gallery__wrapper--interactive': interactive },
+    ]"
+  >
+    <template v-if="selectedImage !== undefined">
+      <img
+        class="presenter-image-gallery__image"
+        :src="images[selectedImage]"
+      >
     </template>
     <template v-else>
-      <img v-for="(img, index) in images" :class="[
-        'presenter-image-gallery__image',
-        { 'presenter-image-gallery__image--interactive': interactive },
-      ]" :key="img" :src="img" @click="$emit('selectImage', index)" />
+      <img
+        v-for="(img, index) in images"
+        :key="img" class="presenter-image-gallery__image"
+        :class="[
+          { 'presenter-image-gallery__image--interactive': interactive },
+        ]"
+        :src="img"
+        @click="$emit('selectImage', index)"
+      >
     </template>
   </div>
 </template>

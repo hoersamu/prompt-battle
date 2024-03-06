@@ -26,12 +26,15 @@ export default defineNuxtConfig({
   },
 
   supabase: {
-    redirect: false,
+    redirectOptions: {
+      login: "/",
+      callback: "/",
+      exclude: [],
+      cookieRedirect: false,
+    },
+
   },
 
   css: ["@/styles/global.css"],
-  modules: [
-    "@nuxtjs/supabase",
-    "@nuxt/fonts",
-  ],
+  modules: ["@nuxtjs/supabase", "@nuxt/fonts", "@vueuse/nuxt", "nuxt-icon"],
 });

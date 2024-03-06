@@ -58,7 +58,7 @@ export function useAdminView(roomId: string) {
       event: Events.START_ROUND,
     });
 
-    // Add a couple seconds to the time limit to account for the time it takes to sync the start event
+    // Add a second to the time limit to account for the time it takes to sync everything
     time.value = timeLimit.value + 1;
 
     interval = setInterval(() => {

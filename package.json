@@ -10,7 +10,9 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "supabase:gen-types": "pnpm dlx supabase gen types typescript --project-id qvmyzaxnpycusghepyyz > types/database.types.ts",
+    "supabase:login": "pnpm dlx supabase login"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.6",
@@ -28,9 +30,10 @@
     "@nuxt/fonts": "^0.0.1",
     "@nuxtjs/supabase": "^1.1.6",
     "@types/uuid": "^9.0.8",
-    "@vueuse/nuxt": "^10.7.2",
+    "@vueuse/nuxt": "^10.9.0",
     "eslint": "^8.57.0",
     "lint-staged": "^15.2.2",
+    "nuxt-icon": "^0.6.8",
     "simple-git-hooks": "^2.9.0"
   },
   "simple-git-hooks": {

@@ -4,14 +4,16 @@ export function useCountdown(initialLimit = 30) {
   const interval = ref<NodeJS.Timeout>();
   const onEndCallback = ref<() => void>();
 
-  const formattedTimeLeft = computed(() => {
-    const minutes = Math.floor(timeLeft.value / 60);
-    const seconds = timeLeft.value % 60;
+  const formatTime = (time: number): string => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
 
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  });
+  };
 
-  const startCountdown = (time: number, onEnd?: () => void) => {
+  const formattedTimeLeft = computed((): string => formatTime(timeLeft.value));
+
+  const startCountdown = (time: number, onEnd?: () => void): void => {
     onEndCallback.value = onEnd;
     timeLimit.value = time;
     timeLeft.value = time;
@@ -28,11 +30,11 @@ export function useCountdown(initialLimit = 30) {
     }, 1000);
   };
 
-  const stopCountdown = () => {
+  const stopCountdown = (): void => {
     clearInterval(interval.value);
   };
 
-  onBeforeRouteLeave(() => {
+  onBeforeRouteLeave((): void => {
     clearInterval(interval.value);
   });
 
@@ -40,5 +42,6 @@ export function useCountdown(initialLimit = 30) {
     startCountdown,
     stopCountdown,
     formattedTimeLeft,
+    formatTime,
   };
 }

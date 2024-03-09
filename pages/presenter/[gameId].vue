@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { GAME_STATES } from "@/config/gameStates";
-import { PLAYER_STATES } from "@/config/players";
 import type { GameUpdatePayload } from "@/types";
-import type { Player } from "@/types/players";
 
 const gameId = useGameId();
 

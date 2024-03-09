@@ -1,4 +1,5 @@
-import { REALTIME_LISTEN_TYPES, REALTIME_PRESENCE_LISTEN_EVENTS, REALTIME_SUBSCRIBE_STATES, type RealtimeChannel, type RealtimePresenceJoinPayload } from "@supabase/supabase-js";
+import { REALTIME_LISTEN_TYPES, REALTIME_PRESENCE_LISTEN_EVENTS, REALTIME_SUBSCRIBE_STATES } from "@supabase/supabase-js";
+import type { RealtimeChannel, RealtimePresenceJoinPayload } from "@supabase/supabase-js";
 
 export enum ROOM_KICK_EVENT { KICK = "kick" }
 export enum ROOM_KICK_SUBEVENT { KICKED_FROM_ROOM = "room-kicked", FULL_ROOM = "full-room" };
@@ -6,8 +7,21 @@ export interface ROOM_KICK_PAYLOAD { player_id: string, type: ROOM_KICK_SUBEVENT
 export interface PresenceJoinPayload {
   username: string
   id: string
-
 };
+
+function useRealtimeSupabase() {
+  const channel = ref<RealtimeChannel>();
+  const joinChannel = (channelName: string) => {
+    channel.value = useTypedSupabaseClient().realtime.channel(channelName, {
+      config: {
+        broadcast: { self: true },
+        presence: { key: "players" },
+      },
+    });
+  };
+
+  return { joinChannel, channel };
+}
 
 export function useRealtimeChannel(gameId: number, callbacks: {
   onSync?: () => void
@@ -16,7 +30,7 @@ export function useRealtimeChannel(gameId: number, callbacks: {
   onSubscribe?: (channel: RealtimeChannel) => void
   onKicked?: (payload: { payload: ROOM_KICK_PAYLOAD }) => void
 }): Ref<RealtimeChannel | undefined> {
-  const { joinChannel, channel } = useSupabase();
+  const { joinChannel, channel } = useRealtimeSupabase();
 
   onMounted(() => {
     joinChannel(`room-${gameId}`);

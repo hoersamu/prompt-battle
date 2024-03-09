@@ -8,6 +8,7 @@
   --color-bg-pastell-2: hsl(10, 100%, 92%);
   --color-bg-pastell-3: hsl(44, 81%, 64%);
   --color-bg-pastell-4: hsl(76, 35%, 64%);
+  --color-font-white: #fff;
 }
 
 html {

@@ -28,6 +28,7 @@ const {
   apiKey,
   saveKey,
 } = useOpenAIImages();
+const { deleteAllImages } = useSupabaseStorage();
 
 const game = await getGameById(gameId);
 const settings = getSettings(game?.settings);
@@ -109,6 +110,9 @@ await getInstructionsForGame();
     <h1>Admin</h1>
     <button @click="reset">
       Reset
+    </button>
+    <button @click="() => deleteAllImages(gameId)">
+      Delete all images
     </button>
     <div v-for="[name, value] in Object.entries(settings)" :key="name">
       {{ name }}: {{ value }}

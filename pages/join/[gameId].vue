@@ -1,14 +1,13 @@
 <script setup lang="ts">
 const name = useUsername();
 const gameId = useGameId();
-const router = useRouter();
 
 const { getGameById } = useGames();
 
 const game = await getGameById(gameId);
 
 if (game === undefined)
-  router.push("/");
+  await navigateTo("/");
 
 const nameRef = ref(name.value);
 

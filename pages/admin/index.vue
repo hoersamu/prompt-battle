@@ -1,13 +1,11 @@
 <script setup lang="ts">
 const { createGame: createGameEntry, getGamesForUser } = useGames();
 
-const router = useRouter();
-
 const user = useSupabaseUser();
 
 // This is only triggered if the authentication fails
 if (!user.value)
-  await router.push("/");
+  await navigateTo("/");
 
 const { data: games, error } = await getGamesForUser();
 
@@ -20,7 +18,7 @@ async function createGame() {
   if (newGame.error || !newGame.data)
     return Logger.error(newGame.error);
 
-  router.push(`/admin/${newGame.data[0].id}`);
+  navigateTo(`/admin/${newGame.data[0].id}`);
 }
 </script>
 

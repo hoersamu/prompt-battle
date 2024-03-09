@@ -14,13 +14,18 @@ function onSubmit() {
 </script>
 
 <template>
-  <div class="play-view">
+  <div class="join-view">
     <h1>Join Game {{ gameId }}</h1>
-    <p>Game ID: {{ gameId }}</p>
-    <label for="name">Name:</label>
-    <input id="name" v-model="nameRef">
-    <button @click="onSubmit">
-      Join Game
-    </button>
+    <PlayerNameInput v-model="nameRef" @submit="onSubmit" />
   </div>
 </template>
+
+<style scoped lang="scss">
+.join-view {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+</style>

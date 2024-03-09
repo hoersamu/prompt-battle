@@ -2,10 +2,10 @@
 import type { RealtimeChannel, RealtimePresenceJoinPayload } from "@supabase/supabase-js";
 import type { PresenceJoinPayload } from "../../composables/useRealtimeChannel";
 import { GAME_STATES } from "@/config/gameStates";
+import { PLAYER_STATES } from "@/config/players";
 
 const gameId = useGameId();
 
-const { startRound } = useAdminView(gameId.toString());
 const { startCountdown } = useCountdown();
 
 const { updateGame, getGameById } = useGames();
@@ -16,12 +16,17 @@ const {
   createInstruction,
   deleteInstruction,
 } = useInstructions(gameId);
+const { players } = await usePlayersByGame(gameId);
+const {
+  updateUser,
+  resetPlayersInGame,
+} = usePlayers();
+const { generateImages } = useOpenAIImages();
 
 const game = await getGameById(gameId);
 const settings = getSettings(game?.settings);
 
 const { createUser } = usePlayers();
-const { players } = await usePlayersByGame(gameId);
 const playerList = computed(() => Object.values(players.value));
 
 async function addJoinedUser({ newPresences }: RealtimePresenceJoinPayload<PresenceJoinPayload>, channel: RealtimeChannel) {
@@ -40,8 +45,6 @@ async function addJoinedUser({ newPresences }: RealtimePresenceJoinPayload<Prese
       continue;
 
     if (currentPlayerCount >= settings.maxPlayers) {
-      console.log("kick", presence.id, presence.username);
-
       channel.send({
         type: "broadcast",
         event: "kick",
@@ -56,18 +59,27 @@ async function addJoinedUser({ newPresences }: RealtimePresenceJoinPayload<Prese
   }
 }
 
-// function userDisconnect() {
-
-// }
-
 useRealtimeChannel(gameId, { onJoin: addJoinedUser });
 
+async function onCountdownEnd() {
+  await updateGame(gameId, { state: GAME_STATES.WAITING, instruction: "" });
+
+  const playersList = Object.values(players.value);
+
+  for (const player of playersList) {
+    if (player.prompt) {
+      generateImages(player.prompt, player.player_id).then((images) => {
+        updateUser(gameId, player.player_id, { images: images.join(","), state: PLAYER_STATES.IMAGE_SELECTION });
+      }).catch(() => {
+        updateUser(gameId, player.player_id, { state: PLAYER_STATES.TOS_VIOLATION });
+      });
+    }
+  }
+}
+
 async function start(instruction: string) {
-  await updateGame(gameId, { state: GAME_STATES.PLAYING, instruction, settings: { timeLimit: 10 } });
-  startCountdown(10, () => {
-    updateGame(gameId, { state: GAME_STATES.WAITING, instruction: "" });
-  });
-  startRound();
+  await updateGame(gameId, { state: GAME_STATES.PLAYING, instruction });
+  startCountdown(settings.timeLimit, onCountdownEnd);
 }
 
 async function sendInstruction(instruction: string) {
@@ -75,7 +87,8 @@ async function sendInstruction(instruction: string) {
 }
 
 async function reset() {
-  await updateGame(gameId, { state: GAME_STATES.WAITING, instruction: "" });
+  resetPlayersInGame(gameId);
+  updateGame(gameId, { state: GAME_STATES.READY, instruction: "" });
 }
 
 await getInstructionsForGame();

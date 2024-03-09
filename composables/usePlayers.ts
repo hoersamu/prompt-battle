@@ -43,11 +43,16 @@ export function usePlayers() {
     return client.from("players").select().eq("game_id", gameId);
   };
 
+  const resetPlayersInGame = async (gameId: number) => {
+    return client.from("players").update({ selected_image: null, prompt: null, images: "", state: "" }).eq("game_id", gameId);
+  };
+
   return {
     updateUser,
     getUserByPlayerAndGameId,
     createUser,
     getUsersForGame,
     getUsersByGameId,
+    resetPlayersInGame,
   };
 }

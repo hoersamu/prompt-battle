@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { GAME_STATES } from "@/config/gameStates";
+import { PLAYER_STATES } from "@/config/players";
 import type { GameUpdatePayload } from "@/types";
+import type { Player } from "@/types/players";
 
 const gameId = useGameId();
 
@@ -16,6 +18,7 @@ const {
   formattedTimeLeft,
 } = useCountdown();
 const settings = computed(() => getSettings(game.value?.settings));
+const gameState = computed(() => game.value?.state);
 const time = computed(() => game.value?.state === GAME_STATES.PLAYING ? formattedTimeLeft.value : formatTime(settings.value.timeLimit));
 
 function onGameChange(payload: GameUpdatePayload) {
@@ -25,6 +28,8 @@ function onGameChange(payload: GameUpdatePayload) {
 registerCallback(onGameChange);
 
 const playerList = computed(() => Object.values(players.value));
+
+const shouldShouldShowPrompt = computed(() => gameState.value === GAME_STATES.PLAYING);
 </script>
 
 <template>
@@ -47,9 +52,16 @@ const playerList = computed(() => Object.values(players.value));
             {{ player.username }}
           </ClientOnly>
         </template>
-        <div class="prompt">
+        <div v-if="shouldShouldShowPrompt" class="prompt">
           {{ player.prompt }}
         </div>
+        <ToSViolation v-else-if="showViolation(gameState, player.state)" />
+        <ImageGallery
+          v-else-if="showGallery(gameState, player.state)"
+          :selected-image="player.selected_image"
+          :images="player.images"
+        />
+        <div v-else />
       </PlayerWindow>
     </div>
   </div>

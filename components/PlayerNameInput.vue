@@ -29,8 +29,8 @@ const name = defineModel<string>();
     border-width: 0 0 2px;
     border-color: #00a4e0;
     background-color: transparent;
-    color: #f8fafa;
     font-size: 40px;
+    text-align: center;
   }
 
   &__button {

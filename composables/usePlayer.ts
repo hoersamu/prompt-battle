@@ -30,6 +30,9 @@ export async function usePlayer(gameId: number, playerId: string) {
   const callback = ref<(payload: PlayerUpdatePayload | PlayerInsertPayload) => void>();
 
   const onPlayerChange = (payload: PlayerUpdatePayload | PlayerInsertPayload) => {
+    if (payload.new.game_id !== gameId)
+      return;
+
     if (callback.value)
       callback.value(payload);
 
@@ -40,14 +43,14 @@ export async function usePlayer(gameId: number, playerId: string) {
 
   const createPlayerChangeChannel = () => {
     return client
-      .channel("schema-db-changes")
+      .channel("player-changes")
       .on(
         REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.UPDATE,
           schema: "public",
           table: "players",
-          filter: `game_id=eq.${gameId}&playerId=eq.${playerId}`,
+          filter: `player_id=eq.${playerId}`,
         },
         onPlayerChange,
       ).on(
@@ -56,7 +59,7 @@ export async function usePlayer(gameId: number, playerId: string) {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.INSERT,
           schema: "public",
           table: "players",
-          filter: `game_id=eq.${gameId}&playerId=eq.${playerId}`,
+          filter: `player_id=eq.${playerId}`,
         },
         onPlayerChange,
       )

@@ -2,6 +2,7 @@
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { ROOM_KICK_SUBEVENT } from "../../composables/useRealtimeChannel";
 import { GAME_STATES } from "@/config/gameStates";
+import { PLAYER_STATES } from "@/config/players";
 import type { GameUpdatePayload } from "@/types";
 
 const gameId = useGameId();
@@ -19,6 +20,7 @@ const {
 
 const { updateUser } = usePlayers();
 const user = useSupabaseUser();
+const { player } = await usePlayer(gameId, user.value?.id ?? "");
 
 function joinChannel(channel: RealtimeChannel) {
   channel.track({ username: username.value, id: user.value?.id });
@@ -59,6 +61,11 @@ function onGameChange(payload: GameUpdatePayload) {
 }
 registerCallback(onGameChange);
 
+function selectImage(index: number) {
+  if (user.value && game.value)
+    updateUser(game.value?.id, user.value.id, { selected_image: index, state: PLAYER_STATES.IMAGE_SELECTED });
+}
+
 watch(prompt, () => {
   if (user.value && game.value)
     updateUser(game.value.id, user.value.id, { prompt: prompt.value });
@@ -75,7 +82,16 @@ watch(prompt, () => {
           {{ username }} - {{ gameState === GAME_STATES.PLAYING ? formattedTimeLeft : formatTime(settings.timeLimit) }}
         </ClientOnly>
       </template>
+      <ToSViolation v-if="showViolation(gameState, player?.state)" />
+      <ImageGallery
+        v-else-if="showGallery(gameState, player?.state)"
+        :images="player?.images"
+        interactive
+        :selected-image="player?.selected_image"
+        @select-image="selectImage"
+      />
       <textarea
+        v-else
         ref="inputRef"
         v-model="prompt"
         class="player-view__input"

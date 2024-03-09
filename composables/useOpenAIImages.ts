@@ -1,17 +1,15 @@
 import OpenAI from "openai";
+import { v4 as uuidv4 } from "uuid";
+import { decode } from "base64-arraybuffer";
 
 export function useOpenAIImages() {
-  const generateImages = async (prompt: string): Promise<string[]> => {
-    const openai = new OpenAI({ apiKey: "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", dangerouslyAllowBrowser: true });
+  const client = useTypedSupabaseClient();
+  const gameId = useGameId();
+
+  const generateImages = async (prompt: string, playerId: string): Promise<string[]> => {
+    const openai = new OpenAI({ apiKey: "", dangerouslyAllowBrowser: true });
 
     // throw new Error('OpenAI API key not set');
-
-    // return [
-    //   'https://placekitten.com/200/200',
-    //   'https://placekitten.com/201/201',
-    //   'https://placekitten.com/202/202',
-    //   'https://placekitten.com/203/203',
-    // ];
 
     // Throws 400
     // {
@@ -26,8 +24,16 @@ export function useOpenAIImages() {
       prompt,
       model: "dall-e-2",
       n: 4,
-    }).then((response) => {
-      return response.data.map(image => image.url as string);
+      size: "512x512",
+      response_format: "b64_json",
+    }).then(async (response) => {
+      const images = response.data.map(image => image.b64_json as string);
+
+      const imageUploads = images.map((image) => {
+        return client.storage.from("images").upload(`${gameId}/${playerId}/${uuidv4()}.jpg`, decode(image), { upsert: true });
+      });
+      const uploadedImages = await Promise.all(imageUploads);
+      return uploadedImages.map(image => image.data?.path).filter((path): path is string => Boolean(path));
     });
   };
 

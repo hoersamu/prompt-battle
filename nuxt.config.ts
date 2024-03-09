@@ -35,5 +35,11 @@ export default defineNuxtConfig({
   },
 
   css: ["@/styles/global.css"],
-  modules: ["@nuxtjs/supabase", "@nuxt/fonts", "@vueuse/nuxt", "nuxt-icon"],
+  modules: [
+    "@nuxtjs/supabase",
+    "@nuxt/fonts",
+    "@vueuse/nuxt",
+    "nuxt-icon",
+    "@formkit/auto-animate/nuxt",
+  ],
 });

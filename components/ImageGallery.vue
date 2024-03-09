@@ -1,34 +1,36 @@
 <script setup lang="ts">
-defineProps<{
-  images: string[]
-  selectedImage?: number
+const {
+  images,
+  selectedImage,
+} = defineProps<{
+  images?: string | null
+  selectedImage?: number | null
   interactive?: boolean
 }>();
 
 defineEmits<{
   selectImage: [number]
 }>();
+
+const imagePrefix = useImageBasePath();
+
+const imageSelected = computed(() => selectedImage !== undefined && selectedImage !== null);
+
+const imagePaths = computed(() => images ? images.split(",").map(path => `${imagePrefix}${path}`) : []);
 </script>
 
 <template>
   <div
-    class="presenter-image-gallery__wrapper" :class="[
-      { 'presenter-image-gallery__wrapper--active': selectedImage !== undefined },
-      { 'presenter-image-gallery__wrapper--interactive': interactive },
-    ]"
+    v-auto-animate
+    class="presenter-image-gallery__wrapper"
+    :class="{ 'presenter-image-gallery__wrapper--active': imageSelected }"
   >
-    <template v-if="selectedImage !== undefined">
+    <template v-for="(img, index) in imagePaths">
       <img
-        class="presenter-image-gallery__image"
-        :src="images[selectedImage]"
-      >
-    </template>
-    <template v-else>
-      <img
-        v-for="(img, index) in images"
+        v-if="!imageSelected || selectedImage === index"
         :key="img" class="presenter-image-gallery__image"
         :class="[
-          { 'presenter-image-gallery__image--interactive': interactive },
+          { 'presenter-image-gallery__image--interactive': interactive && !imageSelected },
         ]"
         :src="img"
         @click="$emit('selectImage', index)"
@@ -58,12 +60,10 @@ defineEmits<{
 }
 
 .presenter-image-gallery__image {
-  height: 100%;
   width: 100%;
   aspect-ratio: 1 / 1;
 
   object-fit: contain;
-  padding: 0.5rem;
   background-color: hsla(0, 0%, 100%, 0.5);
   border-radius: 0.5rem;
   border: 3px solid #000;

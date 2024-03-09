@@ -15,8 +15,10 @@
     "supabase:login": "pnpm dlx supabase login"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^0.8.1",
     "@supabase/supabase-js": "^2.39.6",
     "@vueuse/core": "^10.7.2",
+    "base64-arraybuffer": "^1.0.2",
     "nuxt": "^3.10.3",
     "openai": "^4.28.0",
     "sass": "^1.70.0",

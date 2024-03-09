@@ -83,6 +83,7 @@ async function onCountdownEnd() {
 }
 
 async function start(instruction: string) {
+  await resetPlayersInGame(gameId);
   await updateGame(gameId, { state: GAME_STATES.PLAYING, instruction });
   startCountdown(settings.timeLimit, onCountdownEnd);
 }

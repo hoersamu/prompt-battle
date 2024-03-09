@@ -56,6 +56,7 @@ const gameState = computed(() => game.value?.state ?? GAME_STATES.READY);
 function onGameChange(payload: GameUpdatePayload) {
   if (payload.new.state === GAME_STATES.PLAYING) {
     startCountdown(settings.value.timeLimit);
+    prompt.value = "";
     inputRef.value?.focus();
   }
 }

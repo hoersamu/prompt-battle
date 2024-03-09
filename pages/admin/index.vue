@@ -1,15 +1,9 @@
 <script setup lang="ts">
-import type { Database } from "@/types/database.types";
-
 const { createGame: createGameEntry, getGamesForUser } = useGames();
 
 const router = useRouter();
 
 const user = useSupabaseUser();
-
-const { handleLoginOrSignUp } = useAnonymousAuth();
-
-await handleLoginOrSignUp();
 
 // This is only triggered if the authentication fails
 if (!user.value)

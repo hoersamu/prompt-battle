@@ -14,8 +14,6 @@ const {
   game,
   registerCallback,
 } = await useGame(gameId);
-const { handleLoginOrSignUp } = useAnonymousAuth();
-await handleLoginOrSignUp();
 
 const {
   formattedTimeLeft,

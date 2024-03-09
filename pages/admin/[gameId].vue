@@ -10,7 +10,7 @@ const gameId = useGameId();
 
 const { startCountdown } = useCountdown();
 
-const { updateGame, getGameById } = useGames();
+const { updateGame } = useGames();
 const instructionInput = ref("");
 const {
   instructions,
@@ -29,9 +29,9 @@ const {
   saveKey,
 } = useOpenAIImages();
 const { deleteAllImages } = useSupabaseStorage();
+const { game } = await useGame(gameId);
 
-const game = await getGameById(gameId);
-const settings = getSettings(game?.settings);
+const settings = computed(() => getSettings(game.value?.settings));
 
 const { createUser } = usePlayers();
 
@@ -50,7 +50,7 @@ async function addJoinedUser({ newPresences }: RealtimePresenceJoinPayload<Prese
     if (players.value[presence.id])
       continue;
 
-    if (currentPlayerCount >= settings.maxPlayers) {
+    if (currentPlayerCount >= settings.value.maxPlayers) {
       channel.send({
         type: "broadcast",
         event: "kick",
@@ -86,7 +86,7 @@ async function onCountdownEnd() {
 async function start(instruction: string) {
   await resetPlayersInGame(gameId);
   await updateGame(gameId, { state: GAME_STATES.PLAYING, instruction });
-  startCountdown(settings.timeLimit, onCountdownEnd);
+  startCountdown(settings.value.timeLimit, onCountdownEnd);
 }
 
 async function sendInstruction(instruction: string) {
@@ -138,7 +138,9 @@ await getInstructionsForGame();
       </thead>
       <tbody>
         <tr v-for="instruction in instructions" :key="instruction.id">
-          <td>{{ instruction.instruction }}</td>
+          <td :class="{ 'instruction--active': instruction.instruction === game?.instruction }">
+            {{ instruction.instruction }}
+          </td>
           <td>
             <button
               title="Send instruction without starting round"
@@ -172,5 +174,9 @@ await getInstructionsForGame();
   align-items: center;
   justify-content: center;
   height: 100%;
+}
+
+.instruction--active {
+  color: green;
 }
 </style>

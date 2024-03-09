@@ -1,5 +1,4 @@
 import type { Game } from "@/types/game";
-import type { Database } from "@/types/database.types";
 
 export function useGames() {
   const client = useTypedSupabaseClient();

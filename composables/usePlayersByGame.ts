@@ -1,5 +1,14 @@
-import { REALTIME_LISTEN_TYPES, REALTIME_POSTGRES_CHANGES_LISTEN_EVENT, type RealtimeChannel, type RealtimePostgresDeletePayload } from "@supabase/supabase-js";
-import type { Player, PlayerDeletePayload, PlayerInsertPayload, PlayerUpdatePayload } from "@/types/players";
+import {
+  REALTIME_LISTEN_TYPES,
+  REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
+  type RealtimeChannel,
+} from "@supabase/supabase-js";
+import type {
+  Player,
+  PlayerDeletePayload,
+  PlayerInsertPayload,
+  PlayerUpdatePayload,
+} from "@/types/players";
 
 export async function usePlayersByGame(gameId: number) {
   const client = useTypedSupabaseClient();
@@ -8,18 +17,19 @@ export async function usePlayersByGame(gameId: number) {
   const players = ref<Record<string, Player>>({});
 
   const loadPlayers = async () => {
-    const { data } = await getUsersByGameId(gameId);
+    const data = await getUsersByGameId(gameId);
 
-    if (!data)
-      return Logger.error("Game not found");
+    if (!data.data)
+      return Logger.error("No players");
 
-    players.value = data.reduce((acc, player) => {
+    players.value = data.data.reduce((acc, player) => {
       acc[player.player_id] = player;
       return acc;
     }, {} as Record<string, Player>);
   };
 
   const onPlayerUpsert = (payload: PlayerUpdatePayload | PlayerInsertPayload) => {
+    Logger.log("Player updated", payload);
     players.value[payload.new.player_id] = payload.new;
   };
 
@@ -32,7 +42,7 @@ export async function usePlayersByGame(gameId: number) {
 
   const createPlayerChangeChannel = () => {
     return client
-      .channel("schema-db-changes")
+      .channel("players-changes")
       .on(
         REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
         {
@@ -74,5 +84,7 @@ export async function usePlayersByGame(gameId: number) {
 
   await loadPlayers();
 
-  return { players };
+  return {
+    players,
+  };
 }

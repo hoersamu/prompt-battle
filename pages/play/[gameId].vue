@@ -30,13 +30,10 @@ const settings = computed(() => getSettings(game.value?.settings));
 const gameState = computed(() => game.value?.state ?? GAME_STATES.READY);
 
 function onGameChange(payload: GameUpdatePayload) {
-  // if (game.value?.state !== payload.new.state) {
-  Logger.log("Game state changed", payload.new);
   if (payload.new.state === GAME_STATES.PLAYING) {
     startCountdown(settings.value.timeLimit);
     inputRef.value?.focus();
   }
-  // }
 }
 registerCallback(onGameChange);
 

@@ -26,6 +26,7 @@ export async function useGame(gameId: number) {
   const callback = ref<(payload: GameUpdatePayload) => void>();
 
   const onGameUpdate = (payload: GameUpdatePayload) => {
+    Logger.log("Game updated", payload);
     if (callback.value)
       callback.value(payload);
 
@@ -40,8 +41,9 @@ export async function useGame(gameId: number) {
   const createGameChangeChannel = (
     id: number,
   ) => {
+    Logger.log("Creating game change channel");
     return client
-      .channel("schema-db-changes")
+      .channel("game-changes")
       .on(
         "postgres_changes",
         {

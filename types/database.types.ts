@@ -81,6 +81,7 @@ export type Database = {
           prompt: string | null
           selected_image: number | null
           state: string | null
+          username: string | null
         }
         Insert: {
           game_id: number
@@ -89,6 +90,7 @@ export type Database = {
           prompt?: string | null
           selected_image?: number | null
           state?: string | null
+          username?: string | null
         }
         Update: {
           game_id?: number
@@ -97,6 +99,7 @@ export type Database = {
           prompt?: string | null
           selected_image?: number | null
           state?: string | null
+          username?: string | null
         }
         Relationships: [
           {

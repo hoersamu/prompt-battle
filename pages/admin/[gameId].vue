@@ -3,6 +3,8 @@ import type { RealtimeChannel, RealtimePresenceJoinPayload } from "@supabase/sup
 import type { PresenceJoinPayload } from "../../composables/useRealtimeChannel";
 import { GAME_STATES } from "@/config/gameStates";
 import { PLAYER_STATES } from "@/config/players";
+import type { Settings } from "@/types/settings";
+import type { Json } from "@/types/database.types";
 
 const gameId = useGameId();
 
@@ -21,7 +23,11 @@ const {
   updateUser,
   resetPlayersInGame,
 } = usePlayers();
-const { generateImages } = useOpenAIImages();
+const {
+  generateImages,
+  apiKey,
+  saveKey,
+} = useOpenAIImages();
 
 const game = await getGameById(gameId);
 const settings = getSettings(game?.settings);
@@ -91,6 +97,10 @@ async function reset() {
   updateGame(gameId, { state: GAME_STATES.READY, instruction: "" });
 }
 
+function saveSettings(settings: Settings) {
+  updateGame(gameId, { settings: settings as unknown as Json });
+}
+
 await getInstructionsForGame();
 </script>
 
@@ -102,6 +112,13 @@ await getInstructionsForGame();
     </button>
     <div v-for="[name, value] in Object.entries(settings)" :key="name">
       {{ name }}: {{ value }}
+    </div>
+    <SettingsEditor :settings="settings" @submit="saveSettings" />
+    <div>
+      <label for="apiKey">OpenAI API Key</label>
+      <input id="apiKey" v-model="apiKey">
+      <label for="saveApiKey">Save API Key to Local storage</label>
+      <input id="saveApiKey" v-model="saveKey" type="checkbox">
     </div>
     <form @submit.prevent="() => createInstruction(instructionInput)">
       <input v-model="instructionInput">

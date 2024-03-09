@@ -1,13 +1,22 @@
 import OpenAI from "openai";
 import { v4 as uuidv4 } from "uuid";
 import { decode } from "base64-arraybuffer";
+import { useStorage } from "@vueuse/core";
 
 export function useOpenAIImages() {
   const client = useTypedSupabaseClient();
   const gameId = useGameId();
 
+  const savedKey = useStorage("openai-api-key", "");
+
+  const apiKey = ref(savedKey.value);
+  const saveKey = ref(false);
+
   const generateImages = async (prompt: string, playerId: string): Promise<string[]> => {
-    const openai = new OpenAI({ apiKey: "", dangerouslyAllowBrowser: true });
+    if (!apiKey.value)
+      throw new Error("OpenAI API key not set");
+
+    const openai = new OpenAI({ apiKey: apiKey.value, dangerouslyAllowBrowser: true });
 
     // throw new Error('OpenAI API key not set');
 
@@ -37,7 +46,21 @@ export function useOpenAIImages() {
     });
   };
 
+  watch(saveKey, () => {
+    if (!saveKey.value)
+      savedKey.value = "";
+    else
+      savedKey.value = apiKey.value;
+  });
+
+  watch(apiKey, () => {
+    if (saveKey.value)
+      savedKey.value = apiKey.value;
+  });
+
   return {
     generateImages,
+    apiKey,
+    saveKey,
   };
 }

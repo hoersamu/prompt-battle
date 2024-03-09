@@ -46,6 +46,7 @@ const { heading = "Prompt Battle", animated = false } = defineProps<{ heading?: 
 }
 
 .card__wrapper-content {
+  font-size: 1.25rem;
   background-color: var(--color-bg-pastell-4);
   width: 30rem;
   text-align: center;

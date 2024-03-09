@@ -37,9 +37,7 @@ await handleLoginOrSignUp();
         </button>
       </form>
     </div>
-    <nuxt-link class="index__button" to="/admin">
-      Create Game
-    </nuxt-link>
+    <LinkButton link="/admin" label="Create Game" />
   </CardPage>
 </template>
 

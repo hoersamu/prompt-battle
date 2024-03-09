@@ -9,7 +9,7 @@ const name = defineModel<string>();
 <template>
   <div class="player-name">
     <form @submit.prevent="emit('submit')">
-      <input v-model="name" class="player-name__input" autofocus>
+      <input v-model="name" class="player-name__input" autofocus placeholder="Your name">
       <button type="submit" class="player-name__button">
         Play
       </button>

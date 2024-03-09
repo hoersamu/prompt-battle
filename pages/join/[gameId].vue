@@ -12,7 +12,6 @@ if (game === undefined)
 const nameRef = ref(name.value);
 
 function onSubmit() {
-  console.log("submit");
   if (nameRef.value !== "") {
     name.value = nameRef.value;
     navigateTo(`/play/${gameId}`);
@@ -25,7 +24,3 @@ function onSubmit() {
     <PlayerNameInput v-model="nameRef" @submit="onSubmit" />
   </CardPage>
 </template>
-
-<style scoped lang="scss">
-
-</style>

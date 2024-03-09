@@ -55,13 +55,11 @@ await getInstructionsForGame();
     <table>
       <thead>
         <tr>
-          <th>id</th>
           <th>instruction</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="instruction in instructions" :key="instruction.id">
-          <td>{{ instruction.id }}</td>
           <td>{{ instruction.instruction }}</td>
           <td>
             <button

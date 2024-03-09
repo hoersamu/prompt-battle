@@ -26,9 +26,14 @@ export function useInstructions(gameId: number) {
     if (!user.value)
       return Logger.error("User not logged in");
 
+    const trimmedInstruction = instruction.trim();
+
+    if (!trimmedInstruction)
+      return Logger.error("Instruction cannot be empty");
+
     const { data, error } = await client.from("instruction").insert({
       game_id: gameId,
-      instruction,
+      instruction: trimmedInstruction,
     }).select();
 
     if (error)

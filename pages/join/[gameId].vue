@@ -1,9 +1,16 @@
 <script setup lang="ts">
 const name = useUsername();
+const gameId = useGameId();
+const router = useRouter();
+
+const { getGameById } = useGames();
+
+const game = await getGameById(gameId);
+
+if (game === undefined)
+  router.push("/");
 
 const nameRef = ref(name.value);
-
-const { params: { gameId } } = useRoute();
 
 function onSubmit() {
   if (nameRef.value !== "") {
@@ -14,7 +21,10 @@ function onSubmit() {
 </script>
 
 <template>
-  <div class="join-view">
+  <div
+    v-if="game"
+    class="join-view"
+  >
     <h1>Join Game {{ gameId }}</h1>
     <PlayerNameInput v-model="nameRef" @submit="onSubmit" />
   </div>

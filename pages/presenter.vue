@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { PLAYER_STATES } from "../config/players";
 import { PresenterState } from "../config/presenter";
 
 const route = useRoute();
@@ -21,6 +22,12 @@ const { players } = usePresenterView(room, onRoundStart);
 definePageMeta({
   middleware: ["check-room"],
 });
+
+const somrPlayersWaiting = computed(() =>
+  Object.values(players.value).some(
+    (player) => player.state === PresenterState.Waiting
+  )
+);
 </script>
 
 <template>
@@ -28,12 +35,14 @@ definePageMeta({
     <div class="presenter__header">
       <p>Round 1 - {{ formattedTimeLeft }}</p>
     </div>
+
     <div
       :class="{
         'presenter__wrapper-players': true,
         'presenter__wrapper-players--duell': Object.keys(players).length <= 2,
       }"
     >
+      <LoadingOverlay v-if="somrPlayersWaiting" />
       <PresenterUserWindow
         v-for="(player, id) in players"
         :key="`player-${id}`"

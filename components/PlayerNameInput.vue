@@ -8,45 +8,46 @@ const name = defineModel<string>();
 
 <template>
   <div class="player-name">
-    <input v-model="name" class="player-name__input" autofocus>
-    <button class="player-name__button" @click="emit('submit')">
-      Play
-    </button>
+    <form @submit.prevent="emit('submit')">
+      <input v-model="name" class="player-name__input" autofocus>
+      <button type="submit" class="player-name__button">
+        Play
+      </button>
+    </form>
   </div>
 </template>
 
 <style scoped lang="scss">
-.player-name{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  gap: 40px;
-  height: 100%;
+.player-name__input {
+  width: 20rem;
+  display: block;
+  font-size: 1.25rem;
+  text-align: center;
+  margin: 0 auto;
+  border-radius: 0.5rem;
+  border: 4px solid #000;
+  padding: 0.5rem 0.5rem;
+}
 
-  &__input {
-    outline: 0;
-    border-width: 0 0 2px;
-    border-color: #00a4e0;
-    background-color: transparent;
-    font-size: 40px;
-    text-align: center;
-  }
+.player-name__button {
+  cursor: pointer;
+  width: 20rem;
+  display: block;
+  text-align: center;
+  background: hsl(0, 0%, 90%);
+  margin: 1.5rem auto;
+  padding: 1rem 0.5rem;
+  text-decoration: none;
+  color: #000;
+  font-size: 1.25rem;
 
-  &__button {
-    border: none;
-    background-color: #00a4e0;
-    border-radius: 8px;
-    width: 100px;
-    height: 40px;
-    color: #f8fafa;
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 20px;
+  border-radius: 0.5rem;
+  border: 4px solid #000;
 
-    &:hover {
-      background-image: linear-gradient(rgb(0 0 0/10%) 0 0);
-    }
+  transition: all 0.05s ease-out;
+
+  &:hover {
+    scale: 1.05;
   }
 }
 </style>

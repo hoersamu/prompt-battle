@@ -12,6 +12,7 @@ if (game === undefined)
 const nameRef = ref(name.value);
 
 function onSubmit() {
+  console.log("submit");
   if (nameRef.value !== "") {
     name.value = nameRef.value;
     navigateTo(`/play/${gameId}`);
@@ -20,21 +21,11 @@ function onSubmit() {
 </script>
 
 <template>
-  <div
-    v-if="game"
-    class="join-view"
-  >
-    <h1>Join Game {{ gameId }}</h1>
+  <CardPage v-if="game" :heading="`Join Game ${gameId}`">
     <PlayerNameInput v-model="nameRef" @submit="onSubmit" />
-  </div>
+  </CardPage>
 </template>
 
 <style scoped lang="scss">
-.join-view {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
+
 </style>

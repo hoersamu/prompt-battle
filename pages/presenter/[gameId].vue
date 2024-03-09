@@ -4,7 +4,7 @@ import type { GameUpdatePayload } from "@/types";
 
 const gameId = useGameId();
 
-const { players } = await usePlayersByGame(gameId);
+const { activePlayers } = await usePlayersByGame(gameId);
 const {
   game,
   registerCallback,
@@ -25,8 +25,6 @@ function onGameChange(payload: GameUpdatePayload) {
 }
 registerCallback(onGameChange);
 
-const playerList = computed(() => Object.values(players.value));
-
 const shouldShouldShowPrompt = computed(() => gameState.value === GAME_STATES.PLAYING);
 </script>
 
@@ -38,11 +36,11 @@ const shouldShouldShowPrompt = computed(() => gameState.value === GAME_STATES.PL
     <div
       class="presenter__wrapper-players"
       :class="{
-        'presenter__wrapper-players--duell': playerList.length <= 2,
+        'presenter__wrapper-players--duell': activePlayers.length <= 2,
       }"
     >
       <PlayerWindow
-        v-for="player in playerList"
+        v-for="player in activePlayers"
         :key="player.player_id"
       >
         <template #name>

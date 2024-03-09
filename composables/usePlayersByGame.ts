@@ -16,6 +16,10 @@ export async function usePlayersByGame(gameId: number) {
 
   const players = ref<Record<string, Player>>({});
 
+  const playerList = computed(() => Object.values(players.value));
+
+  const activePlayers = computed(() => playerList.value.filter(player => !player.inactive));
+
   const loadPlayers = async () => {
     const data = await getUsersByGameId(gameId);
 
@@ -85,6 +89,8 @@ export async function usePlayersByGame(gameId: number) {
   await loadPlayers();
 
   return {
+    activePlayers,
+    playerList,
     players,
   };
 }

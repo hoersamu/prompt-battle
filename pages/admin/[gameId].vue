@@ -18,7 +18,7 @@ const {
   createInstruction,
   deleteInstruction,
 } = useInstructions(gameId);
-const { players } = await usePlayersByGame(gameId);
+const { players, playerList } = await usePlayersByGame(gameId);
 const {
   updateUser,
   resetPlayersInGame,
@@ -33,7 +33,6 @@ const game = await getGameById(gameId);
 const settings = getSettings(game?.settings);
 
 const { createUser } = usePlayers();
-const playerList = computed(() => Object.values(players.value));
 
 async function addJoinedUser({ newPresences }: RealtimePresenceJoinPayload<PresenceJoinPayload>, channel: RealtimeChannel) {
   Logger.log("🙃🙃 neue runde");

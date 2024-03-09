@@ -77,6 +77,7 @@ export type Database = {
         Row: {
           game_id: number
           images: string | null
+          inactive: boolean
           player_id: string
           prompt: string | null
           selected_image: number | null
@@ -86,6 +87,7 @@ export type Database = {
         Insert: {
           game_id: number
           images?: string | null
+          inactive?: boolean
           player_id: string
           prompt?: string | null
           selected_image?: number | null
@@ -95,6 +97,7 @@ export type Database = {
         Update: {
           game_id?: number
           images?: string | null
+          inactive?: boolean
           player_id?: string
           prompt?: string | null
           selected_image?: number | null

@@ -5,6 +5,7 @@ await handleLoginOrSignUp();
 </script>
 
 <template>
+  <nuxt-link to="" />
   <nuxt-link to="/admin">
     Create Game
   </nuxt-link>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { RealtimeChannel, RealtimePresenceJoinPayload } from "@supabase/supabase-js";
+import type { PresenceJoinPayload } from "../../composables/useRealtimeChannel";
 import { GAME_STATES } from "@/config/gameStates";
 
 const gameId = useGameId();
@@ -17,6 +19,48 @@ const {
 
 const game = await getGameById(gameId);
 const settings = getSettings(game?.settings);
+
+const { createUser } = usePlayers();
+const { players } = await usePlayersByGame(gameId);
+const playerList = computed(() => Object.values(players.value));
+
+async function addJoinedUser({ newPresences }: RealtimePresenceJoinPayload<PresenceJoinPayload>, channel: RealtimeChannel) {
+  Logger.log("🙃🙃 neue runde");
+
+  Logger.log("Heeeelp");
+
+  const currentPlayerCount = playerList.value.length;
+
+  for (const presence of newPresences) {
+    if (!(presence.id)) {
+      Logger.error("Invalid user id:", presence.id);
+      continue;
+    }
+    if (players.value[presence.id])
+      continue;
+
+    if (currentPlayerCount >= settings.maxPlayers) {
+      console.log("kick", presence.id, presence.username);
+
+      channel.send({
+        type: "broadcast",
+        event: "kick",
+        payload: { player_id: presence.id, type: ROOM_KICK_SUBEVENT.FULL_ROOM },
+      });
+      continue;
+    }
+
+    Logger.log("I'll try to add a user");
+    createUser(gameId, presence.id, presence.username);
+    Logger.log("I added a user");
+  }
+}
+
+// function userDisconnect() {
+
+// }
+
+useRealtimeChannel(gameId, { onJoin: addJoinedUser });
 
 async function start(instruction: string) {
   await updateGame(gameId, { state: GAME_STATES.PLAYING, instruction, settings: { timeLimit: 10 } });

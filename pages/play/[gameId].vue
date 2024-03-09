@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { RealtimeChannel } from "@supabase/supabase-js";
+import { ROOM_KICK_SUBEVENT } from "../../composables/useRealtimeChannel";
 import { GAME_STATES } from "@/config/gameStates";
 import type { GameUpdatePayload } from "@/types";
 
@@ -17,6 +19,26 @@ const {
 
 const { updateUser } = usePlayers();
 const user = useSupabaseUser();
+
+function joinChannel(channel: RealtimeChannel) {
+  channel.track({ username: username.value, id: user.value?.id });
+}
+
+function onKicked(payload: { payload: ROOM_KICK_PAYLOAD }) {
+  if (user.value?.id !== payload.payload.player_id)
+    return;
+
+  switch (payload.payload.type) {
+    case ROOM_KICK_SUBEVENT.FULL_ROOM:
+      navigateTo("/play/fullgame");
+      break;
+    case ROOM_KICK_SUBEVENT.KICKED_FROM_ROOM:
+      navigateTo("/");
+      break;
+  }
+};
+
+useRealtimeChannel(gameId, { onSubscribe: joinChannel, onKicked });
 
 const {
   formattedTimeLeft,

@@ -3,7 +3,7 @@ export interface PlayerPresence {
   id: string
 }
 
-interface GenericEvent {
+export interface GenericEvent {
   event: string
   type: "broadcast"
 }

@@ -4,33 +4,28 @@ export function usePlayers() {
   const client = useTypedSupabaseClient();
   const user = useSupabaseUser();
 
-  const createError = (message: string) => {
-    return {
-      error: message,
-      data: undefined,
-    };
-  };
-
   const getUsersForGame = async (gameId: number) => {
     if (!user.value)
-      return createError("User not logged in");
+      throw new Error("User not logged in");
 
     return client.from("players").select().eq("game_id", gameId);
   };
 
-  const createUser = async (gameId: number, userId: string) => {
+  const createUser = async (gameId: number, userId: string, username: string) => {
     if (!user.value)
-      return createError("User not logged in");
+      throw new Error("User not logged in");
 
     return client.from("players").insert({
       game_id: gameId,
       player_id: userId,
+      username,
+      inactive: false,
     }).select();
   };
 
   const updateUser = async (gameId: number, playerId: string, data: Partial<Player>) => {
     if (!user.value)
-      return createError("User not logged in");
+      throw new Error("User not logged in");
 
     return client
       .from("players")

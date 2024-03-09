@@ -10,7 +10,7 @@ export function useOpenAIImages() {
   const savedKey = useStorage("openai-api-key", "");
 
   const apiKey = ref(savedKey.value);
-  const saveKey = ref(false);
+  const saveKey = ref(!!savedKey.value);
 
   const generateImages = async (prompt: string, playerId: string): Promise<string[]> => {
     if (!apiKey.value)

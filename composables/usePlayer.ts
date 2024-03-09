@@ -19,10 +19,8 @@ export async function usePlayer(gameId: number, playerId: string) {
   async function loadPlayer() {
     const data = await getUserByPlayerAndGameId(gameId, playerId);
 
-    if (!data) {
-      Logger.error("Game not found");
-      return await navigateTo("/");
-    }
+    if (!data)
+      return Logger.log("Player not found");
 
     player.value = data;
   }

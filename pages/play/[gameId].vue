@@ -74,32 +74,37 @@ watch(prompt, () => {
 
 <template>
   <div class="player-view">
-    <div>{{ game?.instruction }}</div>
-    <div>{{ gameState }}</div>
-    <PlayerWindow class="player-view__game-screen">
-      <template #name>
-        <ClientOnly>
-          {{ username }} - {{ gameState === GAME_STATES.PLAYING ? formattedTimeLeft : formatTime(settings.timeLimit) }}
-        </ClientOnly>
-      </template>
-      <ToSViolation v-if="showViolation(gameState, player?.state)" />
-      <ImageGallery
-        v-else-if="showGallery(gameState, player?.state)"
-        :images="player?.images"
-        interactive
-        :selected-image="player?.selected_image"
-        @select-image="selectImage"
-      />
-      <textarea
-        v-else
-        ref="inputRef"
-        v-model="prompt"
-        class="player-view__input"
-        autofocus
-        placeholder="Your prompt goes here"
-        :disabled="game?.state !== GAME_STATES.PLAYING"
-      />
-    </PlayerWindow>
+    <template v-if="player">
+      <div>{{ game?.instruction }}</div>
+      <div>{{ gameState }}</div>
+      <PlayerWindow class="player-view__game-screen">
+        <template #name>
+          <ClientOnly>
+            {{ username }} - {{ gameState === GAME_STATES.PLAYING ? formattedTimeLeft : formatTime(settings.timeLimit) }}
+          </ClientOnly>
+        </template>
+        <ToSViolation v-if="showViolation(gameState, player?.state)" />
+        <ImageGallery
+          v-else-if="showGallery(gameState, player?.state)"
+          :images="player?.images"
+          interactive
+          :selected-image="player?.selected_image"
+          @select-image="selectImage"
+        />
+        <textarea
+          v-else
+          ref="inputRef"
+          v-model="prompt"
+          class="player-view__input"
+          autofocus
+          placeholder="Your prompt goes here"
+          :disabled="game?.state !== GAME_STATES.PLAYING"
+        />
+      </PlayerWindow>
+    </template>
+    <div v-else class="player-view__joining">
+      Joining...
+    </div>
   </div>
 </template>
 
@@ -109,6 +114,13 @@ watch(prompt, () => {
   flex-direction: column;
   height: 100%;
   padding: 20px;
+
+  &__joining {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+  }
 
   &__game-screen {
     flex: 1;

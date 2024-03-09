@@ -28,15 +28,24 @@ export function usePlayers() {
     }).select();
   };
 
-  const updateUser = async (id: number, data: Partial<Player>) => {
+  const updateUser = async (gameId: number, playerId: string, data: Partial<Player>) => {
     if (!user.value)
       return createError("User not logged in");
 
-    return client.from("games").update(data).eq("id", id).select();
+    return client
+      .from("players")
+      .update(data)
+      .eq("game_id", gameId)
+      .eq("player_id", playerId)
+      .select();
   };
 
   const getUserByPlayerAndGameId = async (gameId: number, playerId: string) => {
     return client.from("players").select().eq("game_id", gameId).eq("player_id", playerId).then(res => res.data?.[0]);
+  };
+
+  const getUsersByGameId = async (gameId: number) => {
+    return client.from("players").select().eq("game_id", gameId);
   };
 
   return {
@@ -44,5 +53,6 @@ export function usePlayers() {
     getUserByPlayerAndGameId,
     createUser,
     getUsersForGame,
+    getUsersByGameId,
   };
 }

@@ -32,7 +32,6 @@ export default defineNuxtConfig({
       exclude: [],
       cookieRedirect: false,
     },
-
   },
 
   css: ["@/styles/global.css"],

@@ -15,6 +15,9 @@ const {
   registerCallback,
 } = await useGame(gameId);
 
+const { updateUser } = usePlayers();
+const user = useSupabaseUser();
+
 const {
   formattedTimeLeft,
   startCountdown,
@@ -36,6 +39,11 @@ function onGameChange(payload: GameUpdatePayload) {
   // }
 }
 registerCallback(onGameChange);
+
+watch(prompt, () => {
+  if (user.value && game.value)
+    updateUser(game.value.id, user.value.id, { prompt: prompt.value });
+});
 </script>
 
 <template>

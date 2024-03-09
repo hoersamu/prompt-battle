@@ -1,5 +1,7 @@
 <script setup lang="ts">
+const { handleLoginOrSignUp } = useAnonymousAuth();
 
+await handleLoginOrSignUp();
 </script>
 
 <template>

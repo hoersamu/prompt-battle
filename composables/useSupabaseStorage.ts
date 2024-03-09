@@ -1,5 +1,4 @@
 import { decode } from "base64-arraybuffer";
-import { v4 as uuidv4 } from "uuid";
 import { IMAGE_BUCKET } from "@/config/images";
 
 export function useSupabaseStorage() {
@@ -9,8 +8,8 @@ export function useSupabaseStorage() {
     return client.storage.from(IMAGE_BUCKET);
   };
 
-  const uploadImage = (gameId: number, playerId: string, image: string) => {
-    return getStorageApi().upload(`${gameId}/${playerId}/${uuidv4()}.jpg`, decode(image), { upsert: true });
+  const uploadImage = (gameId: number, playerId: string, name: string, image: string) => {
+    return getStorageApi().upload(`${gameId}/${playerId}/${name}.jpg`, decode(image), { upsert: true });
   };
 
   const deleteAllImages = async (gameId: number) => {

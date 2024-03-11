@@ -121,6 +121,49 @@ export type Database = {
           }
         ]
       }
+      votes: {
+        Row: {
+          game_id: number | null
+          id: number
+          user_id: string | null
+          voted_for: string | null
+        }
+        Insert: {
+          game_id?: number | null
+          id?: number
+          user_id?: string | null
+          voted_for?: string | null
+        }
+        Update: {
+          game_id?: number | null
+          id?: number
+          user_id?: string | null
+          voted_for?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_votes_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_votes_voted_for_fkey"
+            columns: ["voted_for"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never

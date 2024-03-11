@@ -61,6 +61,8 @@ const imagePaths = computed(() => images ? images.split(",").map(path => `${imag
 
 .presenter-image-gallery__image {
   width: 100%;
+  margin: auto unset;
+  height: 100%;
   aspect-ratio: 1 / 1;
 
   object-fit: contain;

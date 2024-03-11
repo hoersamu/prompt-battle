@@ -87,6 +87,7 @@ watch(prompt, () => {
         <ToSViolation v-if="showViolation(gameState, player?.state)" />
         <ImageGallery
           v-else-if="showGallery(gameState, player?.state)"
+          class="player-view__gallery"
           :images="player?.images"
           interactive
           :selected-image="player?.selected_image"
@@ -113,7 +114,7 @@ watch(prompt, () => {
 .player-view {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
   padding: 20px;
 
   &__joining {
@@ -125,6 +126,11 @@ watch(prompt, () => {
 
   &__game-screen {
     flex: 1;
+    overflow: hidden;
+  }
+
+  &__gallery {
+    height: 100%;
   }
 
   &__input {

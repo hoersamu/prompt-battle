@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import type { RealtimeChannel, RealtimePresenceJoinPayload } from "@supabase/supabase-js";
+import type {
+  RealtimeChannel,
+  RealtimePresenceJoinPayload,
+  RealtimePresenceLeavePayload,
+  RealtimePresenceState,
+} from "@supabase/supabase-js";
 import type { PresenceJoinPayload } from "../../composables/useRealtimeChannel";
 import { GAME_STATES } from "@/config/gameStates";
 import { PLAYER_STATES } from "@/config/players";
@@ -22,6 +27,7 @@ const { players, playerList } = await usePlayersByGame(gameId);
 const {
   updateUser,
   resetPlayersInGame,
+  activateAndDeactivateMultiplePlayers,
 } = usePlayers();
 const {
   generateImages,
@@ -33,13 +39,9 @@ const { game } = await useGame(gameId);
 
 const settings = computed(() => getSettings(game.value?.settings));
 
-const { createUser } = usePlayers();
+const { createOrUpdateUser } = usePlayers();
 
 async function addJoinedUser({ newPresences }: RealtimePresenceJoinPayload<PresenceJoinPayload>, channel: RealtimeChannel) {
-  Logger.log("🙃🙃 neue runde");
-
-  Logger.log("Heeeelp");
-
   const currentPlayerCount = playerList.value.length;
 
   for (const presence of newPresences) {
@@ -59,13 +61,34 @@ async function addJoinedUser({ newPresences }: RealtimePresenceJoinPayload<Prese
       continue;
     }
 
-    Logger.log("I'll try to add a user");
-    createUser(gameId, presence.id, presence.username);
-    Logger.log("I added a user");
+    Logger.log(`Adding ${presence.username} to the game`);
+    createOrUpdateUser(gameId, presence.id, presence.username);
   }
 }
 
-useRealtimeChannel(gameId, { onJoin: addJoinedUser });
+function deaktivatePlayer({ leftPresences }: RealtimePresenceLeavePayload<PresenceJoinPayload>) {
+  for (const presence of leftPresences) {
+    if (!presence.id) {
+      Logger.error("Invalid user id:", presence.id);
+      continue;
+    }
+
+    Logger.log(`Remove ${presence.username} from the game`);
+    updateUser(gameId, presence.id, { inactive: true });
+  }
+}
+
+function onSync(presence?: RealtimePresenceState<PresenceJoinPayload>) {
+  const players = presence?.players as PresenceJoinPayload[] || [];
+
+  const playerIds = players.map(player => player.id);
+
+  Logger.log("Syncing players", players.map(player => player.username));
+
+  activateAndDeactivateMultiplePlayers(gameId, playerIds);
+}
+
+useRealtimeChannel(gameId, { onJoin: addJoinedUser, onLeave: deaktivatePlayer, onSync });
 
 async function onCountdownEnd() {
   await updateGame(gameId, { state: GAME_STATES.WAITING, instruction: "" });
@@ -136,7 +159,7 @@ await getInstructionsForGame();
           <th>instruction</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody v-auto-animate>
         <tr v-for="instruction in instructions" :key="instruction.id">
           <td :class="{ 'instruction--active': instruction.instruction === game?.instruction }">
             {{ instruction.instruction }}

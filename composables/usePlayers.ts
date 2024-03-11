@@ -11,11 +11,11 @@ export function usePlayers() {
     return client.from("players").select().eq("game_id", gameId);
   };
 
-  const createUser = async (gameId: number, userId: string, username: string) => {
+  const createOrUpdateUser = async (gameId: number, userId: string, username: string) => {
     if (!user.value)
       throw new Error("User not logged in");
 
-    return client.from("players").insert({
+    return client.from("players").upsert({
       game_id: gameId,
       player_id: userId,
       username,
@@ -47,10 +47,17 @@ export function usePlayers() {
     return client.from("players").update({ selected_image: null, prompt: null, images: "", state: "" }).eq("game_id", gameId);
   };
 
+  const activateAndDeactivateMultiplePlayers = async (gameId: number, playerIds: string[]) => {
+    await client.from("players").update({ inactive: false }).eq("game_id", gameId)
+      .in("player_id", playerIds);
+    await client.from("players").update({ inactive: true }).eq("game_id", gameId).not("player_id", "in", `(${playerIds.join(",")})`);
+  };
+
   return {
+    activateAndDeactivateMultiplePlayers,
     updateUser,
     getUserByPlayerAndGameId,
-    createUser,
+    createOrUpdateUser,
     getUsersForGame,
     getUsersByGameId,
     resetPlayersInGame,

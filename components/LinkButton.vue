@@ -3,7 +3,7 @@ defineProps<{ label: string, link: string }>();
 </script>
 
 <template>
-  <nuxt-link class="link-button" href="link">
+  <nuxt-link class="link-button" :href="link">
     {{ label }}
   </nuxt-link>
 </template>

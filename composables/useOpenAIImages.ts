@@ -31,7 +31,7 @@ export function useOpenAIImages() {
     return openai.images.generate({
       prompt,
       model: "dall-e-2",
-      n: 4,
+      n: 2,
       size: "512x512",
       response_format: "b64_json",
     }).then(async (response) => {

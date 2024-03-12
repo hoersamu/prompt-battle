@@ -95,6 +95,7 @@ const shouldShouldShowPrompt = computed(() => gameState.value === GAME_STATES.PL
   overflow: hidden;
   overflow-wrap: break-word;
   padding: 10px;
+  font-size: 2rem;
 }
 
 .presenter__wrapper {

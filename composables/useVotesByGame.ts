@@ -3,11 +3,6 @@ import {
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   type RealtimeChannel,
 } from "@supabase/supabase-js";
-import type {
-  VoteDeletePayload,
-  VoteInsertPayload,
-  VoteUpdatePayload,
-} from "@/types/votes";
 
 export async function useVotesByGame(gameId: number) {
   const client = useTypedSupabaseClient();
@@ -27,26 +22,16 @@ export async function useVotesByGame(gameId: number) {
     }, {} as Record<string, number>);
   };
 
-  const initializeVoteForPlayer = (playerId: string) => {
-    if (!votes.value[playerId])
-      votes.value[playerId] = 0;
+  const onVoteUpdate = () => {
+    loadVotes();
   };
 
-  const onVoteUpdate = (payload: VoteUpdatePayload) => {
-    initializeVoteForPlayer(payload.new.voted_for);
-    votes.value[payload.new.voted_for] = votes.value[payload.new.voted_for] + 1;
-    if (payload.old.voted_for)
-      votes.value[payload.old.voted_for] = votes.value[payload.old.voted_for] - 1;
+  const onVoteInsert = () => {
+    loadVotes();
   };
 
-  const onVoteInsert = (payload: VoteInsertPayload) => {
-    initializeVoteForPlayer(payload.new.voted_for);
-    votes.value[payload.new.voted_for] = votes.value[payload.new.voted_for] + 1;
-  };
-
-  const onVoteDelete = (payload: VoteDeletePayload) => {
-    if (payload.old.game_id === gameId && payload.old.voted_for)
-      votes.value[payload.old.voted_for] = votes.value[payload.old.voted_for] - 1;
+  const onVoteDelete = () => {
+    loadVotes();
   };
 
   const playersChannel = ref<RealtimeChannel>();

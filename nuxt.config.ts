@@ -29,7 +29,7 @@ export default defineNuxtConfig({
     redirectOptions: {
       login: "/",
       callback: "/",
-      exclude: [],
+      exclude: ["/vote/*"],
       cookieRedirect: false,
     },
   },

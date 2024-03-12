@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { useStorage } from "@vueuse/core";
+import { v4 as uuidv4 } from "uuid";
 
 export function useOpenAIImages() {
   const { uploadImage } = useSupabaseStorage();
@@ -36,8 +37,8 @@ export function useOpenAIImages() {
     }).then(async (response) => {
       const images = response.data.map(image => image.b64_json as string);
 
-      const imageUploads = images.map((image, index) => {
-        return uploadImage(gameId, playerId, index.toString(), image);
+      const imageUploads = images.map((image) => {
+        return uploadImage(gameId, playerId, uuidv4(), image);
       });
       const uploadedImages = await Promise.all(imageUploads);
       return uploadedImages.map(image => image.data?.path).filter((path): path is string => Boolean(path));

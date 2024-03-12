@@ -76,8 +76,6 @@ watch(prompt, () => {
 <template>
   <div class="player-view">
     <template v-if="player">
-      <div>{{ game?.instruction }}</div>
-      <div>{{ gameState }}</div>
       <PlayerWindow class="player-view__game-screen">
         <template #name>
           <ClientOnly>

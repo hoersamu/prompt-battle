@@ -23,7 +23,11 @@ const {
   createInstruction,
   deleteInstruction,
 } = useInstructions(gameId);
-const { players, playerList } = await usePlayersByGame(gameId);
+const {
+  players,
+  finishedPlayers,
+  activePlayerCount,
+} = await usePlayersByGame(gameId);
 const {
   updateUser,
   resetPlayersInGame,
@@ -42,8 +46,6 @@ const settings = computed(() => getSettings(game.value?.settings));
 const { createOrUpdateUser } = usePlayers();
 
 async function addJoinedUser({ newPresences }: RealtimePresenceJoinPayload<PresenceJoinPayload>, channel: RealtimeChannel) {
-  const currentPlayerCount = playerList.value.length;
-
   for (const presence of newPresences) {
     if (!(presence.id)) {
       Logger.error("Invalid user id:", presence.id);
@@ -52,7 +54,7 @@ async function addJoinedUser({ newPresences }: RealtimePresenceJoinPayload<Prese
     if (players.value[presence.id])
       continue;
 
-    if (currentPlayerCount >= settings.value.maxPlayers) {
+    if (activePlayerCount.value >= settings.value.maxPlayers) {
       channel.send({
         type: "broadcast",
         event: "kick",
@@ -66,7 +68,7 @@ async function addJoinedUser({ newPresences }: RealtimePresenceJoinPayload<Prese
   }
 }
 
-function deaktivatePlayer({ leftPresences }: RealtimePresenceLeavePayload<PresenceJoinPayload>) {
+function deactivatePlayer({ leftPresences }: RealtimePresenceLeavePayload<PresenceJoinPayload>) {
   for (const presence of leftPresences) {
     if (!presence.id) {
       Logger.error("Invalid user id:", presence.id);
@@ -88,7 +90,7 @@ function onSync(presence?: RealtimePresenceState<PresenceJoinPayload>) {
   activateAndDeactivateMultiplePlayers(gameId, playerIds);
 }
 
-useRealtimeChannel(gameId, { onJoin: addJoinedUser, onLeave: deaktivatePlayer, onSync });
+useRealtimeChannel(gameId, { onJoin: addJoinedUser, onLeave: deactivatePlayer, onSync });
 
 async function onCountdownEnd() {
   await updateGame(gameId, { state: GAME_STATES.WAITING, instruction: "" });
@@ -102,6 +104,9 @@ async function onCountdownEnd() {
       }).catch(() => {
         updateUser(gameId, player.player_id, { state: PLAYER_STATES.TOS_VIOLATION });
       });
+    }
+    else {
+      updateUser(gameId, player.player_id, { state: PLAYER_STATES.TOS_VIOLATION });
     }
   }
 }
@@ -126,6 +131,10 @@ function saveSettings(settings: Settings) {
 }
 
 await getInstructionsForGame();
+
+function startVote() {
+  updateGame(gameId, { state: GAME_STATES.VOTING });
+}
 </script>
 
 <template>
@@ -136,6 +145,9 @@ await getInstructionsForGame();
     </button>
     <button @click="() => deleteAllImages(gameId)">
       Delete all images
+    </button>
+    <button :disabled="!finishedPlayers || finishedPlayers !== activePlayerCount" @click="startVote">
+      Start Voting
     </button>
     <div v-for="[name, value] in Object.entries(settings)" :key="name">
       {{ name }}: {{ value }}

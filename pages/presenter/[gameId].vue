@@ -4,6 +4,7 @@ import type { GameUpdatePayload } from "@/types";
 
 const gameId = useGameId();
 
+const { votes } = await useVotesByGame(gameId);
 const { activePlayers } = await usePlayersByGame(gameId);
 const {
   game,
@@ -48,22 +49,47 @@ const shouldShouldShowPrompt = computed(() => gameState.value === GAME_STATES.PL
             {{ player.username }}
           </ClientOnly>
         </template>
-        <div v-if="shouldShouldShowPrompt" class="prompt">
-          {{ player.prompt }}
+        <div class="player-window">
+          <div v-if="shouldShouldShowPrompt" class="prompt">
+            {{ player.prompt }}
+          </div>
+          <ToSViolation v-else-if="showViolation(gameState, player.state)" />
+          <ImageGallery
+            v-else-if="showGallery(gameState, player.state)"
+            :selected-image="player.selected_image"
+            :images="player.images"
+          />
+          <div v-else />
+          <div v-if="gameState === GAME_STATES.VOTING" class="voting-overlay">
+            {{ votes[player.player_id] }}
+          </div>
         </div>
-        <ToSViolation v-else-if="showViolation(gameState, player.state)" />
-        <ImageGallery
-          v-else-if="showGallery(gameState, player.state)"
-          :selected-image="player.selected_image"
-          :images="player.images"
-        />
-        <div v-else />
       </PlayerWindow>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
+.player-window {
+  position: relative;
+}
+
+.voting-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  color: white;
+  text-shadow: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 5rem;
+  text-shadow: 0 0 10px black;
+}
+
 .prompt {
   width: 100%;
   overflow: hidden;

@@ -9,6 +9,7 @@ import type {
   PlayerInsertPayload,
   PlayerUpdatePayload,
 } from "@/types/players";
+import { PLAYER_STATES } from "@/config/players";
 
 export async function usePlayersByGame(gameId: number) {
   const client = useTypedSupabaseClient();
@@ -19,6 +20,10 @@ export async function usePlayersByGame(gameId: number) {
   const playerList = computed(() => Object.values(players.value));
 
   const activePlayers = computed(() => playerList.value.filter(player => !player.inactive));
+
+  const activePlayerCount = computed(() => activePlayers.value.length);
+
+  const finishedPlayers = computed(() => playerList.value.filter(player => player.state === PLAYER_STATES.IMAGE_SELECTED || player.state === PLAYER_STATES.TOS_VIOLATION).length);
 
   const loadPlayers = async () => {
     const data = await getUsersByGameId(gameId);
@@ -92,5 +97,7 @@ export async function usePlayersByGame(gameId: number) {
     activePlayers,
     playerList,
     players,
+    finishedPlayers,
+    activePlayerCount,
   };
 }

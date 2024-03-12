@@ -123,22 +123,22 @@ export type Database = {
       }
       votes: {
         Row: {
-          game_id: number | null
+          game_id: number
           id: number
           user_id: string | null
-          voted_for: string | null
+          voted_for: string
         }
         Insert: {
-          game_id?: number | null
+          game_id: number
           id?: number
           user_id?: string | null
-          voted_for?: string | null
+          voted_for?: string
         }
         Update: {
-          game_id?: number | null
+          game_id?: number
           id?: number
           user_id?: string | null
-          voted_for?: string | null
+          voted_for?: string
         }
         Relationships: [
           {
@@ -169,7 +169,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      count_votes:
+        | {
+            Args: Record<PropertyKey, never>
+            Returns: {
+              count: number
+              voted_for: string
+            }[]
+          }
+        | {
+            Args: {
+              game_id: number
+            }
+            Returns: {
+              count: number
+              voted_for: string
+            }[]
+          }
     }
     Enums: {
       [_ in never]: never

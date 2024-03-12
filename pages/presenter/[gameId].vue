@@ -33,6 +33,9 @@ const shouldShouldShowPrompt = computed(() => gameState.value === GAME_STATES.PL
   <div class="presenter__wrapper">
     <div class="presenter__header">
       <p>Round 1 - {{ time }}</p>
+      <p v-if="game?.instruction">
+        {{ game?.instruction }}
+      </p>
     </div>
     <div
       class="presenter__wrapper-players"

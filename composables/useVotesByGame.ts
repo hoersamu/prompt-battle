@@ -34,12 +34,14 @@ export async function useVotesByGame(gameId: number) {
 
   const onVoteUpdate = (payload: VoteUpdatePayload) => {
     initializeVoteForPlayer(payload.new.voted_for);
+    console.log(payload);
     votes.value[payload.new.voted_for] = votes.value[payload.new.voted_for] + 1;
     if (payload.old.voted_for)
       votes.value[payload.old.voted_for] = votes.value[payload.old.voted_for] - 1;
   };
 
   const onVoteInsert = (payload: VoteInsertPayload) => {
+    console.log("insert", payload);
     initializeVoteForPlayer(payload.new.voted_for);
     votes.value[payload.new.voted_for] = votes.value[payload.new.voted_for] + 1;
   };

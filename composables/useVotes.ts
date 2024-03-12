@@ -12,7 +12,7 @@ export function useVotes(gameId: number) {
   };
 
   const deleteAllVotes = async () => {
-    client.from("votes").delete().eq("game_id", gameId);
+    return await client.from("votes").delete().eq("game_id", gameId);
   };
 
   const getVotes = () => {

@@ -40,6 +40,7 @@ const {
 } = useOpenAIImages();
 const { deleteAllImages } = useSupabaseStorage();
 const { game } = await useGame(gameId);
+const { deleteAllVotes } = useVotes(gameId);
 
 const settings = computed(() => getSettings(game.value?.settings));
 
@@ -148,6 +149,9 @@ function startVote() {
     </button>
     <button :disabled="!finishedPlayers || finishedPlayers !== activePlayerCount" @click="startVote">
       Start Voting
+    </button>
+    <button @click="deleteAllVotes ">
+      Delete Votes
     </button>
     <div v-for="[name, value] in Object.entries(settings)" :key="name">
       {{ name }}: {{ value }}

@@ -33,7 +33,7 @@
     "@supabase/supabase-js": "^2.39.7",
     "@types/uuid": "^9.0.8",
     "@vueuse/nuxt": "^10.9.0",
-    "eslint": "^8.57.0",
+    "eslint": "^9.0.0",
     "lint-staged": "^15.2.2",
     "nuxt-icon": "^0.6.8",
     "simple-git-hooks": "^2.9.0"
